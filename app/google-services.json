@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "353827787782",
+    "firebase_url": "https://leenk-f4e72-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "leenk-f4e72",
+    "storage_bucket": "leenk-f4e72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353827787782:android:5c066bc235c27059e7df87",
+        "android_client_info": {
+          "package_name": "com.example.leenk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDKSvQra9uYcUmKYa7dyb8s4nE45qsl1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
