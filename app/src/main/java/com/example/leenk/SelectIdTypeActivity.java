@@ -37,9 +37,9 @@ public class SelectIdTypeActivity extends AppCompatActivity {
         tvIdName.setText(idName);
 
         itemView.setOnClickListener(v -> {
-            // TODO: Handle ID type selection
-            // For now, we'll just pass the selected ID type to a placeholder next activity
-
+            Intent intent = new Intent(SelectIdTypeActivity.this, BasicInfoActivity.class);
+            intent.putExtra("SELECTED_ID_TYPE", idName);
+            startActivity(intent);
         });
     }
 }

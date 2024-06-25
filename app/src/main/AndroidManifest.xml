@@ -29,6 +29,8 @@
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".ScanIdSplashActivity" />
         <activity android:name=".SelectIdTypeActivity" />
+        <activity android:name=".BasicInfoActivity" />
+
 
 
 
