@@ -27,6 +27,7 @@
         <activity android:name=".MobileVerificationActivity" />
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".ScanIdSplashActivity" />
+        <activity android:name=".SelectIdTypeActivity" />
     </application>
 
 </manifest>

@@ -27,9 +27,7 @@ public class ScanIdSplashActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         btnScanId.setOnClickListener(v -> {
-            // TODO: Implement ID scanning functionality or navigate to the next screen
-            // For now, we'll just move to a placeholder next activity
-
+            startActivity(new Intent(ScanIdSplashActivity.this, SelectIdTypeActivity.class));
         });
     }
 }
