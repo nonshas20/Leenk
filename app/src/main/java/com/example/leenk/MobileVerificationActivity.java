@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 public class MobileVerificationActivity extends AppCompatActivity {
 
-    private EditText etPhoneNumber;
+    private EditText etPhoneNumber, etOTP;
     private Button btnVerify;
     private ImageButton btnBack;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
+    private String verificationId;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     @Override
@@ -33,6 +34,7 @@ public class MobileVerificationActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         etPhoneNumber = findViewById(R.id.etPhoneNumber);
+        etOTP = findViewById(R.id.etOTP);
         btnVerify = findViewById(R.id.btnVerify);
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
@@ -42,35 +44,16 @@ public class MobileVerificationActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         btnVerify.setOnClickListener(v -> {
-            String phoneNumber = etPhoneNumber.getText().toString().trim();
-            if (phoneNumber.isEmpty()) {
-                etPhoneNumber.setError("Phone number is required");
-                etPhoneNumber.requestFocus();
-                return;
+            if (etOTP.getVisibility() == View.VISIBLE) {
+                verifyOTP();
+            } else {
+                sendOTP();
             }
-
-            // Add your country code here
-            phoneNumber = "+1" + phoneNumber; // Example for US numbers
-
-            PhoneAuthOptions options =
-                    PhoneAuthOptions.newBuilder(mAuth)
-                            .setPhoneNumber(phoneNumber)
-                            .setTimeout(60L, TimeUnit.SECONDS)
-                            .setActivity(this)
-                            .setCallbacks(mCallbacks)
-                            .build();
-            PhoneAuthProvider.verifyPhoneNumber(options);
         });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
                 signInWithPhoneAuthCredential(phoneAuthCredential);
             }
 
@@ -80,29 +63,58 @@ public class MobileVerificationActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCodeSent(@NonNull String verificationId,
+            public void onCodeSent(@NonNull String vId,
                                    @NonNull PhoneAuthProvider.ForceResendingToken token) {
-                // The SMS verification code has been sent to the provided phone number, we
-                // now need to ask the user to enter the code and then construct a credential
-                // by combining the code with a verification ID.
+                verificationId = vId;
                 Toast.makeText(MobileVerificationActivity.this, "OTP sent", Toast.LENGTH_SHORT).show();
-                // You might want to start a new activity here to enter the OTP
-                // startActivity(new Intent(MobileVerificationActivity.this, OTPVerificationActivity.class));
+                etOTP.setVisibility(View.VISIBLE);
+                btnVerify.setText("Verify OTP");
             }
         };
+    }
+
+    private void sendOTP() {
+        String phoneNumber = etPhoneNumber.getText().toString().trim();
+        if (phoneNumber.isEmpty()) {
+            etPhoneNumber.setError("Phone number is required");
+            etPhoneNumber.requestFocus();
+            return;
+        }
+
+        // Add your country code here
+        phoneNumber = "+63" + phoneNumber; // Example for US numbers
+
+        PhoneAuthOptions options =
+                PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(phoneNumber)
+                        .setTimeout(60L, TimeUnit.SECONDS)
+                        .setActivity(this)
+                        .setCallbacks(mCallbacks)
+                        .build();
+        PhoneAuthProvider.verifyPhoneNumber(options);
+    }
+
+    private void verifyOTP() {
+        String otp = etOTP.getText().toString().trim();
+        if (otp.isEmpty()) {
+            etOTP.setError("OTP is required");
+            etOTP.requestFocus();
+            return;
+        }
+
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, otp);
+        signInWithPhoneAuthCredential(credential);
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(MobileVerificationActivity.this, "Verification successful", Toast.LENGTH_SHORT).show();
-                        // You might want to start a new activity here
+                        // TODO: Start next activity
                         // startActivity(new Intent(MobileVerificationActivity.this, NextActivity.class));
                         finish();
                     } else {
-                        // Sign in failed, display a message and update the UI
                         Toast.makeText(MobileVerificationActivity.this, "Verification failed", Toast.LENGTH_SHORT).show();
                     }
                 });
