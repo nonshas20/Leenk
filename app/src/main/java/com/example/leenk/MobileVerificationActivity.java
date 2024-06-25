@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.content.Intent;
 import android.widget.Toast;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
@@ -111,8 +112,7 @@ public class MobileVerificationActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(MobileVerificationActivity.this, "Verification successful", Toast.LENGTH_SHORT).show();
-                        // TODO: Start next activity
-                        // startActivity(new Intent(MobileVerificationActivity.this, NextActivity.class));
+                        startActivity(new Intent(MobileVerificationActivity.this, EmailVerificationActivity.class));
                         finish();
                     } else {
                         Toast.makeText(MobileVerificationActivity.this, "Verification failed", Toast.LENGTH_SHORT).show();

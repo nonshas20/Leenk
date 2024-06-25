@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".CitizenshipQuestionActivity" />
         <activity android:name=".MobileVerificationActivity" />
+        <activity android:name=".EmailVerificationActivity" />
+        <activity android:name=".ScanIdSplashActivity" />
     </application>
 
 </manifest>
