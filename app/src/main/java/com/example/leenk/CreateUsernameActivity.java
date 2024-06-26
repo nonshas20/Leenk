@@ -57,8 +57,9 @@ public class CreateUsernameActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(CreateUsernameActivity.this, "Username saved successfully", Toast.LENGTH_SHORT).show();
-                            // Navigate to the next activity (passcode creation)
-                            // startActivity(new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class));
+                            // Navigate to the passcode creation activity
+                            Intent intent = new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class);
+                            startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(CreateUsernameActivity.this, "Failed to save username", Toast.LENGTH_SHORT).show();

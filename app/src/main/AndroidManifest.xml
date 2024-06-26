@@ -32,6 +32,10 @@
         <activity android:name=".BasicInfoActivity" />
         <activity android:name=".HomeAddressActivity" />
         <activity android:name=".CreateUsernameActivity" />
+        <activity android:name=".CreatePasscodeActivity" />
+        <activity android:name=".LoginUsernameActivity" />
+        <activity android:name=".LoginPasscodeActivity" />
+        <activity android:name=".HomeDashboardActivity" />
 
 
 

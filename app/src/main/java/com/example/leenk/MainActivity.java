@@ -4,12 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import com.example.leenk.CitizenshipQuestionActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btnLogin, btnRegister;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
 
         btnLogin.setOnClickListener(v -> {
-            // TODO: Implement login functionality
+            Intent intent = new Intent(MainActivity.this, LoginUsernameActivity.class);
+            startActivity(intent);
         });
 
         btnRegister.setOnClickListener(v -> {
