@@ -31,6 +31,7 @@
         <activity android:name=".SelectIdTypeActivity" />
         <activity android:name=".BasicInfoActivity" />
         <activity android:name=".HomeAddressActivity" />
+        <activity android:name=".CreateUsernameActivity" />
 
 
 

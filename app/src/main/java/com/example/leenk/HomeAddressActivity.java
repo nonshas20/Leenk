@@ -2,6 +2,7 @@ package com.example.leenk;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -81,7 +82,9 @@ public class HomeAddressActivity extends AppCompatActivity {
         userRef.child("barangay").setValue(barangay)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(HomeAddressActivity.this, "Home address saved successfully", Toast.LENGTH_SHORT).show();
-                    // TODO: Navigate to the next activity or finish the process
+                    // Navigate to CreateUsernameActivity
+                    Intent intent = new Intent(HomeAddressActivity.this, CreateUsernameActivity.class);
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(HomeAddressActivity.this, "Failed to save address", Toast.LENGTH_SHORT).show());
