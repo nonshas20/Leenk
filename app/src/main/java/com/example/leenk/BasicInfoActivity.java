@@ -2,6 +2,7 @@ package com.example.leenk;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -58,7 +59,8 @@ public class BasicInfoActivity extends AppCompatActivity {
         userRef.child("date_of_birth").setValue(dateOfBirth)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(BasicInfoActivity.this, "Basic information saved successfully", Toast.LENGTH_SHORT).show();
-                    // TODO: Navigate to the next activity or finish the process
+                            Intent intent = new Intent(BasicInfoActivity.this, HomeAddressActivity.class);
+                        startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(BasicInfoActivity.this, "Failed to save information", Toast.LENGTH_SHORT).show());

@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Leenk</string>
+    <string-array name="countries_array">
+        <item>Philippines</item>
+
+    </string-array>
+
+    <string-array name="philippines_provinces_array">
+        <item>Metro Manila</item>
+        <item>Cebu</item>
+        <item>Davao</item>
+
+    </string-array>
 </resources>
