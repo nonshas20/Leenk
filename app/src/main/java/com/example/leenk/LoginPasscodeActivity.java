@@ -13,6 +13,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 public class LoginPasscodeActivity extends AppCompatActivity {
 
     private EditText[] passcodeInputs;
@@ -98,24 +103,27 @@ public class LoginPasscodeActivity extends AppCompatActivity {
     }
 
     private void verifyPasscode(String enteredPasscode) {
-        mDatabase.child("users").child(userId).child("passcode").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    String storedPasscode = dataSnapshot.getValue(String.class);
+                    String storedPasscode = dataSnapshot.child("passcode").getValue(String.class);
                     if (storedPasscode != null && storedPasscode.equals(enteredPasscode)) {
-                        // Passcode is correct, proceed to home page dashboard
-                        Toast.makeText(LoginPasscodeActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginPasscodeActivity.this, HomeDashboardActivity.class);
-                        startActivity(intent);
-                        finish();
+                        // Passcode is correct
+                        if (!dataSnapshot.hasChild("accountNumber")) {
+                            // First time login, initialize account details
+                            initializeAccountDetails();
+                        } else {
+                            // Proceed to home page dashboard
+                            proceedToHomeDashboard();
+                        }
                     } else {
                         // Incorrect passcode
                         Toast.makeText(LoginPasscodeActivity.this, "Incorrect passcode", Toast.LENGTH_SHORT).show();
                         clearPasscodeInputs();
                     }
                 } else {
-                    Toast.makeText(LoginPasscodeActivity.this, "Error: Passcode not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginPasscodeActivity.this, "Error: User not found", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -130,5 +138,52 @@ public class LoginPasscodeActivity extends AppCompatActivity {
         for (EditText input : passcodeInputs) {
             input.setText("");
         }
+    }
+    private void initializeAccountDetails() {
+        String accountNumber = generateAccountNumber();
+        String expirationDate = generateExpirationDate();
+        String cvv = generateCVV();
+
+        Map<String, Object> accountDetails = new HashMap<>();
+        accountDetails.put("balance", 0.00);
+        accountDetails.put("accountNumber", accountNumber);
+        accountDetails.put("expirationDate", expirationDate);
+        accountDetails.put("cvv", cvv);
+
+        mDatabase.child("users").child(userId).updateChildren(accountDetails)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(LoginPasscodeActivity.this, "Account initialized successfully", Toast.LENGTH_SHORT).show();
+                    proceedToHomeDashboard();
+                })
+                .addOnFailureListener(e -> Toast.makeText(LoginPasscodeActivity.this, "Failed to initialize account", Toast.LENGTH_SHORT).show());
+    }
+
+    private String generateAccountNumber() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
+
+    private String generateExpirationDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 3); // Set expiration to 3 years from now
+        int month = calendar.get(Calendar.MONTH) + 1; // Calendar.MONTH is 0-based
+        int year = calendar.get(Calendar.YEAR) % 100; // Get last two digits of year
+        return String.format("%02d/%02d", month, year);
+    }
+
+    private String generateCVV() {
+        Random random = new Random();
+        return String.format("%03d", random.nextInt(1000));
+    }
+
+    private void proceedToHomeDashboard() {
+        Intent intent = new Intent(LoginPasscodeActivity.this, HomeDashboardActivity.class);
+        intent.putExtra("USER_ID", userId);
+        startActivity(intent);
+        finish();
     }
 }
