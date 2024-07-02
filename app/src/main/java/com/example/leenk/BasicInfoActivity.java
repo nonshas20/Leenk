@@ -10,14 +10,19 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import android.app.DatePickerDialog;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class BasicInfoActivity extends AppCompatActivity {
 
-    private EditText etFirstName, etMiddleName, etLastName, etDateOfBirth;
-    private Button btnSubmit;
+    private EditText etFirstName, etMiddleName, etLastName;
+    private Button btnDateOfBirth, btnSubmit;
     private ImageButton btnBack;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,26 +31,51 @@ public class BasicInfoActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        calendar = Calendar.getInstance();
 
         etFirstName = findViewById(R.id.etFirstName);
         etMiddleName = findViewById(R.id.etMiddleName);
         etLastName = findViewById(R.id.etLastName);
-        etDateOfBirth = findViewById(R.id.etDateOfBirth);
+        btnDateOfBirth = findViewById(R.id.btnDateOfBirth);
         btnSubmit = findViewById(R.id.btnSubmit);
         btnBack = findViewById(R.id.btnBack);
 
         btnBack.setOnClickListener(v -> finish());
 
+        btnDateOfBirth.setOnClickListener(v -> showDatePickerDialog());
+
         btnSubmit.setOnClickListener(v -> submitBasicInfo());
+    }
+
+    private void showDatePickerDialog() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, month);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    updateDateButtonText();
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        datePickerDialog.show();
+    }
+
+    private void updateDateButtonText() {
+        String dateFormat = "MM/dd/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat, Locale.US);
+        btnDateOfBirth.setText(sdf.format(calendar.getTime()));
     }
 
     private void submitBasicInfo() {
         String firstName = etFirstName.getText().toString().trim();
         String middleName = etMiddleName.getText().toString().trim();
         String lastName = etLastName.getText().toString().trim();
-        String dateOfBirth = etDateOfBirth.getText().toString().trim();
+        String dateOfBirth = btnDateOfBirth.getText().toString();
 
-        if (firstName.isEmpty() || lastName.isEmpty() || dateOfBirth.isEmpty()) {
+        if (firstName.isEmpty() || lastName.isEmpty() || dateOfBirth.equals("Select Date of Birth")) {
             Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -59,8 +89,8 @@ public class BasicInfoActivity extends AppCompatActivity {
         userRef.child("date_of_birth").setValue(dateOfBirth)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(BasicInfoActivity.this, "Basic information saved successfully", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BasicInfoActivity.this, HomeAddressActivity.class);
-                        startActivity(intent);
+                    Intent intent = new Intent(BasicInfoActivity.this, HomeAddressActivity.class);
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(BasicInfoActivity.this, "Failed to save information", Toast.LENGTH_SHORT).show());

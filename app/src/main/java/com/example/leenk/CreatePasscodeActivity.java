@@ -1,6 +1,7 @@
 package com.example.leenk;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +30,6 @@ public class CreatePasscodeActivity extends AppCompatActivity {
         initializeViews();
         setupNumberPad();
     }
-
     private void initializeViews() {
         passcodeInputs = new EditText[]{
                 findViewById(R.id.etPasscode1),
@@ -99,9 +99,22 @@ public class CreatePasscodeActivity extends AppCompatActivity {
         mDatabase.child("users").child(userId).child("passcode").setValue(passcode)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(CreatePasscodeActivity.this, "Passcode saved successfully", Toast.LENGTH_SHORT).show();
-                    // TODO: Navigate to the next activity or finish the process
-                    finish();
+                    completeRegistration();
                 })
                 .addOnFailureListener(e -> Toast.makeText(CreatePasscodeActivity.this, "Failed to save passcode", Toast.LENGTH_SHORT).show());
+    }
+
+    private void completeRegistration() {
+        // Set a flag in SharedPreferences to indicate that registration is complete
+        getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                .edit()
+                .putBoolean("isRegistrationComplete", true)
+                .apply();
+
+        // Navigate back to MainActivity
+        Intent intent = new Intent(CreatePasscodeActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

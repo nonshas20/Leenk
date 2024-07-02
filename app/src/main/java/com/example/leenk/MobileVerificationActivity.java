@@ -15,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.concurrent.TimeUnit;
 
 public class MobileVerificationActivity extends AppCompatActivity {
@@ -111,12 +114,30 @@ public class MobileVerificationActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        // Get the verified phone number
+                        String phoneNumber = etPhoneNumber.getText().toString().trim();
+
+                        // Save the phone number to the database
+                        savePhoneNumberToDatabase(phoneNumber);
+
                         Toast.makeText(MobileVerificationActivity.this, "Verification successful", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(MobileVerificationActivity.this, EmailVerificationActivity.class));
                         finish();
                     } else {
                         Toast.makeText(MobileVerificationActivity.this, "Verification failed", Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+    private void savePhoneNumberToDatabase(String phoneNumber) {
+        String userId = mAuth.getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+        userRef.child("phoneNumber").setValue(phoneNumber)
+                .addOnSuccessListener(aVoid -> {
+                    // Phone number saved successfully
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(MobileVerificationActivity.this, "Failed to save phone number", Toast.LENGTH_SHORT).show();
                 });
     }
 }
