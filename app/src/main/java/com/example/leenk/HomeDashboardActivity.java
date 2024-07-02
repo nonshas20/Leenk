@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -97,7 +98,6 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     Double balance = dataSnapshot.child("balance").getValue(Double.class);
                     currentBalance = balance != null ? balance : 0.0;
                     tvBalance.setText(String.format("₱ %.2f", currentBalance));
-
                     String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
                     tvAccountNumber.setText(accountNumber);
 
@@ -133,8 +133,10 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     String type = snapshot.child("type").getValue(String.class);
                     Double amount = snapshot.child("amount").getValue(Double.class);
                     Long timestamp = snapshot.child("timestamp").getValue(Long.class);
+                    String paymentMethod = snapshot.child("paymentMethod").getValue(String.class);  // Assuming paymentMethod is stored in Firebase
+
                     if (type != null && amount != null && timestamp != null) {
-                        UserTransaction transaction = new UserTransaction(type, amount, timestamp);
+                        UserTransaction transaction = new UserTransaction(type, amount, timestamp, paymentMethod);
                         transactions.add(transaction);
                     }
                 }
@@ -151,9 +153,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void showDepositDialog() {
-        // TODO: Implement a dialog to enter deposit amount
-        // For now, we'll just add a fixed amount
-        updateBalance(50.00, "deposit");
+        Intent intent = new Intent(this, DepositActivity.class);
+        startActivity(intent);
     }
 
     private void showSendDialog() {
@@ -198,7 +199,10 @@ public class HomeDashboardActivity extends AppCompatActivity {
         }
 
         String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
-        UserTransaction transaction = new UserTransaction(type, amount, System.currentTimeMillis());
+        long timestamp = System.currentTimeMillis();  // Get current timestamp
+
+        // Assuming paymentMethod is not always required
+        UserTransaction transaction = new UserTransaction(type, amount, timestamp, null);
 
         mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
                 .addOnSuccessListener(aVoid -> Toast.makeText(HomeDashboardActivity.this, "Transaction added successfully", Toast.LENGTH_SHORT).show())

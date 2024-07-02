@@ -36,6 +36,7 @@
         <activity android:name=".LoginUsernameActivity" />
         <activity android:name=".LoginPasscodeActivity" />
         <activity android:name=".HomeDashboardActivity" />
+        <activity android:name=".DepositActivity" />
 
 
 
