@@ -19,6 +19,8 @@ public class CreatePasscodeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,14 @@ public class CreatePasscodeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Retrieve the userId from the intent
+        userId = getIntent().getStringExtra("USER_ID");
+        if (userId == null || userId.isEmpty()) {
+            Toast.makeText(this, "User ID is missing. Please start over.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         initializeViews();
         setupNumberPad();
@@ -95,7 +105,6 @@ public class CreatePasscodeActivity extends AppCompatActivity {
     }
 
     private void savePasscode(String passcode) {
-        String userId = mAuth.getCurrentUser().getUid();
         mDatabase.child("users").child(userId).child("passcode").setValue(passcode)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(CreatePasscodeActivity.this, "Passcode saved successfully", Toast.LENGTH_SHORT).show();

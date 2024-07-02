@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -19,16 +18,16 @@ public class HomeAddressActivity extends AppCompatActivity {
     private EditText etHouseNumber, etStreet, etBarangay;
     private Button btnConfirm;
     private ImageButton btnBack;
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_address);
 
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = getIntent().getStringExtra("USER_ID");
 
         spinnerCountry = findViewById(R.id.spinnerCountry);
         spinnerProvince = findViewById(R.id.spinnerProvince);
@@ -44,6 +43,7 @@ public class HomeAddressActivity extends AppCompatActivity {
 
         btnConfirm.setOnClickListener(v -> submitHomeAddress());
     }
+
 
     private void setupSpinners() {
         // Setup country spinner
@@ -72,8 +72,7 @@ public class HomeAddressActivity extends AppCompatActivity {
             return;
         }
 
-        String userId = mAuth.getCurrentUser().getUid();
-        DatabaseReference userRef = mDatabase.child("users").child(userId).child("home_address");
+        DatabaseReference userRef = mDatabase.child(userId).child("home_address");
 
         userRef.child("country").setValue(country);
         userRef.child("house_number").setValue(houseNumber);
@@ -82,8 +81,8 @@ public class HomeAddressActivity extends AppCompatActivity {
         userRef.child("barangay").setValue(barangay)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(HomeAddressActivity.this, "Home address saved successfully", Toast.LENGTH_SHORT).show();
-                    // Navigate to CreateUsernameActivity
                     Intent intent = new Intent(HomeAddressActivity.this, CreateUsernameActivity.class);
+                    intent.putExtra("USER_ID", userId);
                     startActivity(intent);
                     finish();
                 })

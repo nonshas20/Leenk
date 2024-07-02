@@ -21,6 +21,7 @@ public class CreateUsernameActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,8 @@ public class CreateUsernameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_username);
 
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = getIntent().getStringExtra("USER_ID");
 
         etUsername = findViewById(R.id.etUsername);
         btnSubmit = findViewById(R.id.btnSubmit);
@@ -52,13 +54,13 @@ public class CreateUsernameActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-            mDatabase.child("users").child(userId).child("username").setValue(username)
+            mDatabase.child(userId).child("username").setValue(username)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(CreateUsernameActivity.this, "Username saved successfully", Toast.LENGTH_SHORT).show();
                             // Navigate to the passcode creation activity
                             Intent intent = new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class);
+                            intent.putExtra("USER_ID", userId);  // Pass the userId
                             startActivity(intent);
                             finish();
                         } else {

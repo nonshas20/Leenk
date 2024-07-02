@@ -17,6 +17,7 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private DatabaseReference mDatabase;
     private String selectedOption = "";
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,7 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_citizenship_question);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = mDatabase.push().getKey(); // Generate a new unique ID for the user
 
         btnYes = findViewById(R.id.btnYes);
         btnNo = findViewById(R.id.btnNo);
@@ -37,14 +39,14 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         btnNext.setOnClickListener(v -> {
             if (!selectedOption.isEmpty()) {
                 saveToDatabase();
-                Intent intent = new Intent(CitizenshipQuestionActivity.this, MobileVerificationActivity.class);
+                Intent intent = new Intent(CitizenshipQuestionActivity.this, EmailVerificationActivity.class);
+                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
             }
         });
 
         btnClose.setOnClickListener(v -> finish());
 
-        // Set initial progress (assuming this is the first step of registration)
         progressBar.setProgress(20);
     }
 
@@ -53,16 +55,8 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         btnYes.setBackgroundResource(option.equals("Yes") ? R.drawable.button_selected : R.drawable.button_background);
         btnNo.setBackgroundResource(option.equals("No") ? R.drawable.button_selected : R.drawable.button_background);
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
 
     private void saveToDatabase() {
-        String userId = mDatabase.push().getKey();
         mDatabase.child(userId).child("isFilipinoitizen").setValue(selectedOption);
     }
-
 }

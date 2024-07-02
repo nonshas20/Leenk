@@ -12,10 +12,14 @@ public class SelectIdTypeActivity extends AppCompatActivity {
 
     private ImageButton btnBack;
 
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_id_type);
+
+        userId = getIntent().getStringExtra("USER_ID");
 
         btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
@@ -38,6 +42,7 @@ public class SelectIdTypeActivity extends AppCompatActivity {
 
         itemView.setOnClickListener(v -> {
             Intent intent = new Intent(SelectIdTypeActivity.this, BasicInfoActivity.class);
+            intent.putExtra("USER_ID", userId);
             intent.putExtra("SELECTED_ID_TYPE", idName);
             startActivity(intent);
         });

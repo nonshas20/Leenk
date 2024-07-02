@@ -13,11 +13,14 @@ public class ScanIdSplashActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private ProgressBar progressBar;
 
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_id_splash);
 
+        userId = getIntent().getStringExtra("USER_ID");
         btnScanId = findViewById(R.id.btnScanId);
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
@@ -27,7 +30,9 @@ public class ScanIdSplashActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         btnScanId.setOnClickListener(v -> {
-            startActivity(new Intent(ScanIdSplashActivity.this, SelectIdTypeActivity.class));
+            Intent intent = new Intent(ScanIdSplashActivity.this, SelectIdTypeActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
         });
     }
 }

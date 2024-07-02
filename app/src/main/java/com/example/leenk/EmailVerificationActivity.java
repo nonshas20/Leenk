@@ -21,6 +21,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,8 @@ public class EmailVerificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_email_verification);
 
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = getIntent().getStringExtra("USER_ID");
 
         etEmailAddress = findViewById(R.id.etEmailAddress);
         btnSubmit = findViewById(R.id.btnSubmit);
@@ -52,13 +54,20 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-            mDatabase.child("users").child(userId).child("email").setValue(email)
+            // Ensure userId is not null
+            if (userId == null) {
+                Toast.makeText(EmailVerificationActivity.this, "User ID is null", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Update the email in the database
+            mDatabase.child(userId).child("email").setValue(email)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(EmailVerificationActivity.this, "Email saved successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(EmailVerificationActivity.this, ScanIdSplashActivity.class));
-                            finish();
+                            Intent intent = new Intent(EmailVerificationActivity.this, ScanIdSplashActivity.class);
+                            intent.putExtra("USER_ID", userId);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(EmailVerificationActivity.this, "Failed to save email", Toast.LENGTH_SHORT).show();
                         }
@@ -67,4 +76,5 @@ public class EmailVerificationActivity extends AppCompatActivity {
             Toast.makeText(EmailVerificationActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

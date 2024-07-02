@@ -1,5 +1,6 @@
 package com.example.leenk;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class MobileVerificationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String verificationId;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    private DatabaseReference mDatabase;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class MobileVerificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mobile_verification);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = getIntent().getStringExtra("USER_ID");
 
         etPhoneNumber = findViewById(R.id.etPhoneNumber);
         etOTP = findViewById(R.id.etOTP);
@@ -43,7 +48,7 @@ public class MobileVerificationActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
 
-        progressBar.setProgress(40); // This is the second step, so 40% progress
+        progressBar.setProgress(40);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -129,12 +134,13 @@ public class MobileVerificationActivity extends AppCompatActivity {
                 });
     }
     private void savePhoneNumberToDatabase(String phoneNumber) {
-        String userId = mAuth.getCurrentUser().getUid();
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
-
-        userRef.child("phoneNumber").setValue(phoneNumber)
+        mDatabase.child(userId).child("phoneNumber").setValue(phoneNumber)
                 .addOnSuccessListener(aVoid -> {
-                    // Phone number saved successfully
+                    Toast.makeText(MobileVerificationActivity.this, "Phone number saved successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MobileVerificationActivity.this, EmailVerificationActivity.class);
+                    intent.putExtra("USER_ID", userId);
+                    startActivity(intent);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(MobileVerificationActivity.this, "Failed to save phone number", Toast.LENGTH_SHORT).show();

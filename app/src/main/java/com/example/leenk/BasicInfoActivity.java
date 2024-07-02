@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import android.app.DatePickerDialog;
@@ -20,18 +19,17 @@ public class BasicInfoActivity extends AppCompatActivity {
     private EditText etFirstName, etMiddleName, etLastName;
     private Button btnDateOfBirth, btnSubmit;
     private ImageButton btnBack;
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private Calendar calendar;
-    //test commmit
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic_info);
 
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        userId = getIntent().getStringExtra("USER_ID");
         calendar = Calendar.getInstance();
 
         etFirstName = findViewById(R.id.etFirstName);
@@ -81,8 +79,7 @@ public class BasicInfoActivity extends AppCompatActivity {
             return;
         }
 
-        String userId = mAuth.getCurrentUser().getUid();
-        DatabaseReference userRef = mDatabase.child("users").child(userId).child("basic_info");
+        DatabaseReference userRef = mDatabase.child(userId).child("basic_info");
 
         userRef.child("first_name").setValue(firstName);
         userRef.child("middle_name").setValue(middleName);
@@ -91,6 +88,7 @@ public class BasicInfoActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(BasicInfoActivity.this, "Basic information saved successfully", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(BasicInfoActivity.this, HomeAddressActivity.class);
+                    intent.putExtra("USER_ID", userId);
                     startActivity(intent);
                     finish();
                 })
