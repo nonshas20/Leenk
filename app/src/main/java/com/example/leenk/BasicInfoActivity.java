@@ -23,6 +23,7 @@ public class BasicInfoActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private Calendar calendar;
+    //test commmit
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
