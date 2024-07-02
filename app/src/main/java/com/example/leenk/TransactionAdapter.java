@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
-    private List<Transaction> transactions;
+    private List<UserTransaction> transactions;
 
-    public TransactionAdapter(List<Transaction> transactions) {
+    public TransactionAdapter(List<UserTransaction> transactions) {
         this.transactions = transactions;
     }
 
@@ -27,7 +27,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Transaction transaction = transactions.get(position);
+        UserTransaction transaction = transactions.get(position);
         holder.tvType.setText(transaction.getType());
         holder.tvAmount.setText(String.format("₱ %.2f", transaction.getAmount()));
         holder.tvTimestamp.setText(new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(new Date(transaction.getTimestamp())));

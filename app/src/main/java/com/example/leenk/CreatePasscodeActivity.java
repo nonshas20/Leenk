@@ -10,6 +10,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreatePasscodeActivity extends AppCompatActivity {
 
@@ -105,7 +107,15 @@ public class CreatePasscodeActivity extends AppCompatActivity {
     }
 
     private void savePasscode(String passcode) {
-        mDatabase.child("users").child(userId).child("passcode").setValue(passcode)
+        DatabaseReference userRef = mDatabase.child("users").child(userId);
+
+        // Create a map to update multiple children
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("passcode", passcode);
+        userUpdates.put("balance", 0.0);
+        userUpdates.put("transactions", null); // This creates an empty transactions node
+
+        userRef.updateChildren(userUpdates)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(CreatePasscodeActivity.this, "Passcode saved successfully", Toast.LENGTH_SHORT).show();
                     completeRegistration();

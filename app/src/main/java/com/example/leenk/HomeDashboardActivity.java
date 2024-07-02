@@ -16,6 +16,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -92,7 +94,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    currentBalance = dataSnapshot.child("balance").getValue(Double.class);
+                    Double balance = dataSnapshot.child("balance").getValue(Double.class);
+                    currentBalance = balance != null ? balance : 0.0;
                     tvBalance.setText(String.format("₱ %.2f", currentBalance));
 
                     String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
@@ -121,9 +124,13 @@ public class HomeDashboardActivity extends AppCompatActivity {
         mDatabase.child("users").child(userId).child("transactions").limitToLast(5).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Transaction> transactions = new ArrayList<>();
+                List<UserTransaction> transactions = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Transaction transaction = snapshot.getValue(Transaction.class);
+                    // Adapt Firebase DataSnapshot to UserTransaction
+                    String type = snapshot.child("type").getValue(String.class);
+                    double amount = snapshot.child("amount").getValue(Double.class);
+                    long timestamp = snapshot.child("timestamp").getValue(Long.class);
+                    UserTransaction transaction = new UserTransaction(type, amount, timestamp);
                     transactions.add(transaction);
                 }
                 // Reverse the list to show most recent first
@@ -153,20 +160,35 @@ public class HomeDashboardActivity extends AppCompatActivity {
 
     private void updateBalance(double amount, String transactionType) {
         String userId = mAuth.getCurrentUser().getUid();
-        double newBalance = currentBalance + amount;
+        mDatabase.child("users").child(userId).runTransaction(new com.google.firebase.database.Transaction.Handler() {
+            @Override
+            public com.google.firebase.database.Transaction.Result doTransaction(MutableData mutableData) {
+                Double currentBalance = mutableData.child("balance").getValue(Double.class);
+                if (currentBalance == null) {
+                    currentBalance = 0.0;
+                }
+                double newBalance = currentBalance + amount;
+                mutableData.child("balance").setValue(newBalance);
+                return com.google.firebase.database.Transaction.success(mutableData);
+            }
 
-        mDatabase.child("users").child(userId).child("balance").setValue(newBalance)
-                .addOnSuccessListener(aVoid -> {
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (committed) {
                     // Balance updated successfully, now add the transaction
                     addTransaction(amount, transactionType);
-                })
-                .addOnFailureListener(e -> Toast.makeText(HomeDashboardActivity.this, "Failed to update balance", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(HomeDashboardActivity.this, "Balance updated successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(HomeDashboardActivity.this, "Failed to update balance", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void addTransaction(double amount, String type) {
         String userId = mAuth.getCurrentUser().getUid();
         String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
-        Transaction transaction = new Transaction(type, amount, System.currentTimeMillis());
+        UserTransaction transaction = new UserTransaction(type, amount, System.currentTimeMillis());
 
         mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
                 .addOnSuccessListener(aVoid -> Toast.makeText(HomeDashboardActivity.this, "Transaction added successfully", Toast.LENGTH_SHORT).show())

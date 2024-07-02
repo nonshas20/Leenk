@@ -1,19 +1,18 @@
 package com.example.leenk;
 
-public class Transaction {
+public class UserTransaction {
     private String type;
     private double amount;
     private long timestamp;
 
     // Default constructor required for Firebase
-    public Transaction() {}
+    public UserTransaction() {}
 
-    public Transaction(String type, double amount, long timestamp) {
+    public UserTransaction(String type, double amount, long timestamp) {
         this.type = type;
         this.amount = amount;
         this.timestamp = timestamp;
     }
-
     // Getters
     public String getType() {
         return type;
