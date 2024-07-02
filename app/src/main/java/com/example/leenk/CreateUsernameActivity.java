@@ -52,23 +52,24 @@ public class CreateUsernameActivity extends AppCompatActivity {
             return;
         }
 
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            mDatabase.child(userId).child("username").setValue(username)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(CreateUsernameActivity.this, "Username saved successfully", Toast.LENGTH_SHORT).show();
-                            // Navigate to the passcode creation activity
-                            Intent intent = new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class);
-                            intent.putExtra("USER_ID", userId);  // Pass the userId
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(CreateUsernameActivity.this, "Failed to save username", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(CreateUsernameActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+        // Ensure userId is not null
+        if (userId == null) {
+            Toast.makeText(CreateUsernameActivity.this, "User ID is null", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        mDatabase.child(userId).child("username").setValue(username)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateUsernameActivity.this, "Username saved successfully", Toast.LENGTH_SHORT).show();
+                        // Navigate to the passcode creation activity
+                        Intent intent = new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class);
+                        intent.putExtra("USER_ID", userId);  // Pass the userId
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(CreateUsernameActivity.this, "Failed to save username", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

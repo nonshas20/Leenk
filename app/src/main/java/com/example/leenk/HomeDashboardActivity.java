@@ -34,14 +34,14 @@ public class HomeDashboardActivity extends AppCompatActivity {
     private String userId;
     private boolean isBalanceVisible = true;
     private double currentBalance = 0.00;
-    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_dashboard);
 
-        mAuth = FirebaseAuth.getInstance();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userId = getIntent().getStringExtra("USER_ID");
 
@@ -120,20 +120,24 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void loadRecentTransactions() {
-        String userId = mAuth.getCurrentUser().getUid();
+        if (userId == null) {
+            Toast.makeText(this, "User ID is not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mDatabase.child("users").child(userId).child("transactions").limitToLast(5).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<UserTransaction> transactions = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Adapt Firebase DataSnapshot to UserTransaction
                     String type = snapshot.child("type").getValue(String.class);
-                    double amount = snapshot.child("amount").getValue(Double.class);
-                    long timestamp = snapshot.child("timestamp").getValue(Long.class);
-                    UserTransaction transaction = new UserTransaction(type, amount, timestamp);
-                    transactions.add(transaction);
+                    Double amount = snapshot.child("amount").getValue(Double.class);
+                    Long timestamp = snapshot.child("timestamp").getValue(Long.class);
+                    if (type != null && amount != null && timestamp != null) {
+                        UserTransaction transaction = new UserTransaction(type, amount, timestamp);
+                        transactions.add(transaction);
+                    }
                 }
-                // Reverse the list to show most recent first
                 Collections.reverse(transactions);
                 TransactionAdapter adapter = new TransactionAdapter(transactions);
                 rvRecentTransactions.setAdapter(adapter);
@@ -159,23 +163,25 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void updateBalance(double amount, String transactionType) {
-        String userId = mAuth.getCurrentUser().getUid();
-        mDatabase.child("users").child(userId).runTransaction(new com.google.firebase.database.Transaction.Handler() {
+        if (userId == null) {
+            Toast.makeText(this, "User ID is not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mDatabase.child("users").child(userId).child("balance").runTransaction(new Transaction.Handler() {
             @Override
-            public com.google.firebase.database.Transaction.Result doTransaction(MutableData mutableData) {
-                Double currentBalance = mutableData.child("balance").getValue(Double.class);
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Double currentBalance = mutableData.getValue(Double.class);
                 if (currentBalance == null) {
                     currentBalance = 0.0;
                 }
-                double newBalance = currentBalance + amount;
-                mutableData.child("balance").setValue(newBalance);
-                return com.google.firebase.database.Transaction.success(mutableData);
+                mutableData.setValue(currentBalance + amount);
+                return Transaction.success(mutableData);
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                 if (committed) {
-                    // Balance updated successfully, now add the transaction
                     addTransaction(amount, transactionType);
                     Toast.makeText(HomeDashboardActivity.this, "Balance updated successfully", Toast.LENGTH_SHORT).show();
                 } else {
@@ -186,7 +192,11 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void addTransaction(double amount, String type) {
-        String userId = mAuth.getCurrentUser().getUid();
+        if (userId == null) {
+            Toast.makeText(this, "User ID is not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
         UserTransaction transaction = new UserTransaction(type, amount, System.currentTimeMillis());
 
