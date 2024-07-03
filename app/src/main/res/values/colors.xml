@@ -10,5 +10,10 @@
     <color name="button_unselected_color">#01f5fd</color>
     <color name="primary_text_color">#d7094f</color>
     <color name="border_color">#d7094f</color>
+    <color name="dark_background">#1C1C1E</color>
+
+    <color name="gray">#8E8E93</color>
+    <color name="cyan">#5AC8FA</color>
+
     
 </resources>

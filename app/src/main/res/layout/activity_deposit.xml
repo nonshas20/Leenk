@@ -120,6 +120,21 @@
                 android:layout_marginTop="24dp"
                 android:padding="16dp"
                 app:cornerRadius="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Or scan this QR code:"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="1dp"
+                android:contentDescription="QR Code for deposit"
+                android:src="@drawable/mock_qr_code" />
 
         </LinearLayout>
 

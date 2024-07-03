@@ -111,4 +111,5 @@ public class DepositActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> Toast.makeText(DepositActivity.this, "Failed to record transaction", Toast.LENGTH_SHORT).show());
         }
     }
+
 }
