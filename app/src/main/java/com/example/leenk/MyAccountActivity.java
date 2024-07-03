@@ -56,78 +56,71 @@ public class MyAccountActivity extends AppCompatActivity {
 
         // Set up click listeners
         btnBack.setOnClickListener(v -> finish());
-        btnCopy.setOnClickListener(v -> copyAccountNumber());
+
 
         // Load user data
         loadUserData();
     }
 
     private void loadUserData() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-            mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // Retrieve user data
-                        String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
-                        String firstName = dataSnapshot.child("basic_info").child("first_name").getValue(String.class);
-                        String middleName = dataSnapshot.child("basic_info").child("middle_name").getValue(String.class);
-                        String lastName = dataSnapshot.child("basic_info").child("last_name").getValue(String.class);
-                        String fullName = firstName + " " + middleName + " " + lastName;
-                        String dateOfBirth = dataSnapshot.child("basic_info").child("date_of_birth").getValue(String.class);
-                        String countryOfBirth = dataSnapshot.child("home_address").child("country").getValue(String.class);
-                        String idNumber = dataSnapshot.child("idNumber").getValue(String.class);
-                        String username = dataSnapshot.child("username").getValue(String.class);
-                        String mobileNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
-                        String emailAddress = dataSnapshot.child("email").getValue(String.class);
-                        String houseNumber = dataSnapshot.child("home_address").child("house_number").getValue(String.class);
-                        String street = dataSnapshot.child("home_address").child("street").getValue(String.class);
-                        String barangay = dataSnapshot.child("home_address").child("barangay").getValue(String.class);
-                        String province = dataSnapshot.child("home_address").child("province").getValue(String.class);
-                        String homeAddress = houseNumber + ", " + street + ", " + barangay + ", " + province;
+        // Use the specific user ID from your database
+        String userId = "-O0q_GN23R4Q13aKGjf3";
+        mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve user data
+                    String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
+                    DataSnapshot basicInfoSnapshot = dataSnapshot.child("basic_info");
+                    String firstName = basicInfoSnapshot.child("first_name").getValue(String.class);
+                    String middleName = basicInfoSnapshot.child("middle_name").getValue(String.class);
+                    String lastName = basicInfoSnapshot.child("last_name").getValue(String.class);
+                    String fullName = (firstName != null ? firstName : "") + " " +
+                            (middleName != null ? middleName : "") + " " +
+                            (lastName != null ? lastName : "");
+                    String dateOfBirth = basicInfoSnapshot.child("date_of_birth").getValue(String.class);
 
-                        // Set the data to views
-                        tvAccountNumber.setText(accountNumber != null ? accountNumber : "N/A");
-                        tvFullName.setText(fullName != null ? fullName : "N/A");
-                        tvDateOfBirth.setText(dateOfBirth != null ? dateOfBirth : "N/A");
-                        tvCountryOfBirth.setText(countryOfBirth != null ? countryOfBirth : "N/A");
-                        tvIdNumber.setText(idNumber != null ? idNumber : "N/A");
-                        tvUsername.setText(username != null ? username : "N/A");
-                        tvMobileNumber.setText(mobileNumber != null ? mobileNumber : "N/A");
-                        tvEmailAddress.setText(emailAddress != null ? emailAddress : "N/A");
-                        tvHomeAddress.setText(homeAddress != null ? homeAddress : "N/A");
+                    DataSnapshot homeAddressSnapshot = dataSnapshot.child("home_address");
+                    String country = homeAddressSnapshot.child("country").getValue(String.class);
+                    String username = dataSnapshot.child("username").getValue(String.class);
+                    String emailAddress = dataSnapshot.child("email").getValue(String.class);
 
-                        // Log the data for debugging
-                        Log.d("MyAccountActivity", "Account Number: " + accountNumber);
-                        Log.d("MyAccountActivity", "Full Name: " + fullName);
-                        Log.d("MyAccountActivity", "Date of Birth: " + dateOfBirth);
-                        Log.d("MyAccountActivity", "Country of Birth: " + countryOfBirth);
-                        Log.d("MyAccountActivity", "ID Number: " + idNumber);
-                        Log.d("MyAccountActivity", "Username: " + username);
-                        Log.d("MyAccountActivity", "Mobile Number: " + mobileNumber);
-                        Log.d("MyAccountActivity", "Email Address: " + emailAddress);
-                        Log.d("MyAccountActivity", "Home Address: " + homeAddress);
-                    }
+                    String houseNumber = homeAddressSnapshot.child("house_number").getValue(String.class);
+                    String street = homeAddressSnapshot.child("street").getValue(String.class);
+                    String barangay = homeAddressSnapshot.child("barangay").getValue(String.class);
+                    String province = homeAddressSnapshot.child("province").getValue(String.class);
+                    String homeAddress = (houseNumber != null ? houseNumber + ", " : "") +
+                            (street != null ? street + ", " : "") +
+                            (barangay != null ? barangay + ", " : "") +
+                            (province != null ? province : "");
+
+                    // Set the data to views
+                    tvAccountNumber.setText(accountNumber != null ? accountNumber : "N/A");
+                    tvFullName.setText(!fullName.trim().isEmpty() ? fullName : "N/A");
+                    tvDateOfBirth.setText(dateOfBirth != null ? dateOfBirth : "N/A");
+                    tvCountryOfBirth.setText(country != null ? country : "N/A");
+                    tvUsername.setText(username != null ? username : "N/A");
+                    tvEmailAddress.setText(emailAddress != null ? emailAddress : "N/A");
+                    tvHomeAddress.setText(!homeAddress.trim().isEmpty() ? homeAddress : "N/A");
+
+                    // Log the data for debugging
+                    Log.d("MyAccountActivity", "Account Number: " + accountNumber);
+                    Log.d("MyAccountActivity", "Full Name: " + fullName);
+                    Log.d("MyAccountActivity", "Date of Birth: " + dateOfBirth);
+                    Log.d("MyAccountActivity", "Country: " + country);
+                    Log.d("MyAccountActivity", "Username: " + username);
+                    Log.d("MyAccountActivity", "Email Address: " + emailAddress);
+                    Log.d("MyAccountActivity", "Home Address: " + homeAddress);
+                } else {
+                    Log.d("MyAccountActivity", "No data found for user: " + userId);
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(MyAccountActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
-                    Log.e("MyAccountActivity", "Database Error: " + databaseError.getMessage());
-                }
-            });
-        }
-    }
-
-    private void copyAccountNumber() {
-        String accountNumber = tvAccountNumber.getText().toString();
-        if (!accountNumber.isEmpty()) {
-            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            android.content.ClipData clip = android.content.ClipData.newPlainText("Account Number", accountNumber);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(this, "Account number copied to clipboard", Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MyAccountActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
+                Log.e("MyAccountActivity", "Database Error: " + databaseError.getMessage());
+            }
+        });
     }
 }
