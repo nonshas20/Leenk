@@ -75,8 +75,13 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnScanQR.setOnClickListener(v -> Toast.makeText(this, "Scan QR clicked", Toast.LENGTH_SHORT).show());
         btnSend.setOnClickListener(v -> showSendDialog());
         btnTransfer.setOnClickListener(v -> Toast.makeText(this, "Transfer clicked", Toast.LENGTH_SHORT).show());
-        btnMyAccount.setOnClickListener(v -> Toast.makeText(this, "My Account clicked", Toast.LENGTH_SHORT).show());
+        btnMyAccount.setOnClickListener(v -> navigateToMyAccount());
         btnHelpCenter.setOnClickListener(v -> Toast.makeText(this, "Help Center clicked", Toast.LENGTH_SHORT).show());
+    }
+
+    private void navigateToMyAccount() {
+        Intent intent = new Intent(this, MyAccountActivity.class);
+        startActivity(intent);
     }
 
     private void toggleBalanceVisibility() {
