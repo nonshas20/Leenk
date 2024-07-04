@@ -162,8 +162,11 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     cvv = dataSnapshot.child("cvv").getValue(String.class);
                     tvCVV.setText(cvv);
 
-                    String name = dataSnapshot.child("name").getValue(String.class);
-                    tvName.setText(name);
+                    // Retrieve first name from basic_info
+                    String firstName = dataSnapshot.child("basic_info").child("first_name").getValue(String.class);
+                    String lastName = dataSnapshot.child("basic_info").child("last_name").getValue(String.class);
+                    String fullName = firstName + " " + lastName; // Or adjust as per your naming convention
+                    tvName.setText("Hi, " + fullName); // Set the greeting message with the retrieved name
 
                     if (isCardDetailsVisible) {
                         showCardDetails();
