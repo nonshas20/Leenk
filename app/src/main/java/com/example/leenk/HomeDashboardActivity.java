@@ -1,6 +1,7 @@
 package com.example.leenk;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,9 +34,11 @@ public class HomeDashboardActivity extends AppCompatActivity {
 
     private TextView tvBalance, tvAccountNumber, tvCardNumber, tvExpirationDate, tvCVV, tvName;
     private ImageButton btnToggleBalance, btnDeposit, btnScanQR, btnSend, btnTransfer, btnToggleCardDetails;
-    private Button btnMyAccount, btnHelpCenter, btnAllTransactions;
+    private CardView btnMyAccount, btnHelpCenter, btnAllTransactions;
     private RecyclerView rvRecentTransactions;
     private DatabaseReference mDatabase;
+
+
     private String userId;
     private boolean isBalanceVisible = true;
     private boolean isCardDetailsVisible = true;
