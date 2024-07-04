@@ -16,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Calendar;
 
 public class CitizenshipQuestionActivity extends AppCompatActivity {
 
@@ -50,7 +51,7 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
             if (!selectedOption.isEmpty()) {
                 if (userId != null) {
                     saveToDatabase();
-                    Intent intent = new Intent(CitizenshipQuestionActivity.this, EmailVerificationActivity.class);
+                    Intent intent = new Intent(CitizenshipQuestionActivity.this, MobileVerificationActivity.class);
                     intent.putExtra("USER_ID", userId);
                     startActivity(intent);
                 } else {
@@ -90,11 +91,16 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         if (userId != null) {
             Map<String, Object> userData = new HashMap<>();
             userData.put("accountNumber", generateAccountNumber());
-            userData.put("balance", 0);
-            userData.put("isFilipinoitizen", ""); // Note: Corrected key to "isFilipinoCitizen"
+            userData.put("balance", 0.00);
+            userData.put("isFilipinoCitizen", ""); // Corrected key
+            userData.put("expirationDate", generateExpirationDate());
+            userData.put("cvv", generateCVV());
 
             mDatabase.child(userId).setValue(userData)
-                    .addOnSuccessListener(aVoid -> Log.d("CitizenshipActivity", "User data initialized successfully"))
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("CitizenshipActivity", "User data initialized successfully");
+                        verifyAccountInitialization();
+                    })
                     .addOnFailureListener(e -> Log.w("CitizenshipActivity", "Error initializing user data", e));
         } else {
             Log.e("CitizenshipActivity", "userId is null. Cannot initialize user data.");
@@ -110,6 +116,37 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         return sb.toString();
     }
 
+    private String generateExpirationDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 3); // Set expiration to 3 years from now
+        int month = calendar.get(Calendar.MONTH) + 1; // Calendar.MONTH is 0-based
+        int year = calendar.get(Calendar.YEAR) % 100; // Get last two digits of year
+        return String.format("%02d/%02d", month, year);
+    }
+
+    private String generateCVV() {
+        Random random = new Random();
+        return String.format("%03d", random.nextInt(1000));
+    }
+
+    private void verifyAccountInitialization() {
+        mDatabase.child(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Map<String, Object> userData = (Map<String, Object>) task.getResult().getValue();
+                if (userData != null) {
+                    Log.d("CitizenshipActivity", "Account details verified: " +
+                            "AccountNumber: " + userData.get("accountNumber") +
+                            ", ExpirationDate: " + userData.get("expirationDate") +
+                            ", CVV: " + userData.get("cvv"));
+                } else {
+                    Log.e("CitizenshipActivity", "User data is null after initialization");
+                }
+            } else {
+                Log.e("CitizenshipActivity", "Error verifying account initialization", task.getException());
+            }
+        });
+    }
+
     private void selectOption(String option) {
         selectedOption = option;
         btnYes.setBackgroundResource(option.equals("Yes") ? R.drawable.button_selected : R.drawable.button_background);
@@ -118,7 +155,7 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
 
     private void saveToDatabase() {
         if (userId != null) {
-            mDatabase.child(userId).child("isFilipinoitizen").setValue(selectedOption)
+            mDatabase.child(userId).child("isFilipinoCitizen").setValue(selectedOption)
                     .addOnSuccessListener(aVoid -> Log.d("CitizenshipActivity", "Citizenship status saved successfully"))
                     .addOnFailureListener(e -> Log.w("CitizenshipActivity", "Error saving citizenship status", e));
         } else {

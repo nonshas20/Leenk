@@ -70,6 +70,7 @@ public class MyAccountActivity extends AppCompatActivity {
         // Load user data
         loadUserData(userId);
     }
+
     private void setInfoItemValue(View layout, String label, String value) {
         TextView tvLabel = layout.findViewById(R.id.tvLabel);
         TextView tvValue = layout.findViewById(R.id.tvValue);
@@ -117,8 +118,9 @@ public class MyAccountActivity extends AppCompatActivity {
                     String username = dataSnapshot.child("username").getValue(String.class);
                     setInfoItemValue(findViewById(R.id.layoutUsername), "Username", username);
 
-                    // Mobile number is not present in your structure, so we'll set it to N/A
-                    setInfoItemWithButtonValue(findViewById(R.id.layoutMobileNumber), "Mobile number", "N/A", "Change");
+                    // Get the mobile number from the database
+                    String mobileNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
+                    setInfoItemWithButtonValue(findViewById(R.id.layoutMobileNumber), "Mobile number", mobileNumber, "Change");
 
                     String email = dataSnapshot.child("email").getValue(String.class);
                     setInfoItemWithButtonValue(findViewById(R.id.layoutEmailAddress), "Email address", email, "Verify");
