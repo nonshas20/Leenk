@@ -1,12 +1,14 @@
 package com.example.leenk;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,9 +25,10 @@ import java.util.List;
 public class WithdrawActivity extends AppCompatActivity {
 
     private TextView tvCurrentBalance;
-    private EditText etWithdrawAmount;
+    private EditText etWithdrawAmount, etAccountNumber;
     private Button btnWithdraw;
     private RecyclerView rvWithdrawTransactions;
+    private CardView cardNoTransfers;
     private String userId;
     private double currentBalance;
     private DatabaseReference mDatabase;
@@ -48,8 +51,10 @@ public class WithdrawActivity extends AppCompatActivity {
     private void initializeViews() {
         tvCurrentBalance = findViewById(R.id.tvCurrentBalance);
         etWithdrawAmount = findViewById(R.id.etWithdrawAmount);
+        etAccountNumber = findViewById(R.id.etAccountNumber);
         btnWithdraw = findViewById(R.id.btnWithdraw);
         rvWithdrawTransactions = findViewById(R.id.rvWithdrawTransactions);
+        cardNoTransfers = findViewById(R.id.cardNoTransfers);
         rvWithdrawTransactions.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -63,8 +68,10 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private void processWithdrawal() {
         String amountStr = etWithdrawAmount.getText().toString();
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show();
+        String accountNumber = etAccountNumber.getText().toString();
+
+        if (amountStr.isEmpty() || accountNumber.isEmpty()) {
+            Toast.makeText(this, "Please enter both amount and account number", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -79,26 +86,27 @@ public class WithdrawActivity extends AppCompatActivity {
             return;
         }
 
-        updateBalance(-amount);
+        updateBalance(-amount, accountNumber);
     }
 
-    private void updateBalance(double amount) {
+    private void updateBalance(double amount, String accountNumber) {
         mDatabase.child("users").child(userId).child("balance").setValue(currentBalance + amount)
                 .addOnSuccessListener(aVoid -> {
-                    addTransaction(amount);
+                    addTransaction(amount, accountNumber);
                     currentBalance += amount;
                     updateBalanceDisplay();
                     Toast.makeText(WithdrawActivity.this, "Withdrawal successful", Toast.LENGTH_SHORT).show();
                     etWithdrawAmount.setText("");
+                    etAccountNumber.setText("");
                 })
                 .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to process withdrawal", Toast.LENGTH_SHORT).show());
     }
 
-    private void addTransaction(double amount) {
+    private void addTransaction(double amount, String accountNumber) {
         String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
         long timestamp = System.currentTimeMillis();
 
-        UserTransaction transaction = new UserTransaction("withdraw", amount, timestamp, "Withdrawal");
+        UserTransaction transaction = new UserTransaction("withdraw", amount, timestamp, "Withdrawal to " + accountNumber);
 
         mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
                 .addOnSuccessListener(aVoid -> loadWithdrawTransactions())
@@ -120,8 +128,7 @@ public class WithdrawActivity extends AppCompatActivity {
                             }
                         }
                         Collections.reverse(transactions);
-                        TransactionAdapter adapter = new TransactionAdapter(transactions);
-                        rvWithdrawTransactions.setAdapter(adapter);
+                        updateUI(transactions);
                     }
 
                     @Override
@@ -129,5 +136,17 @@ public class WithdrawActivity extends AppCompatActivity {
                         Toast.makeText(WithdrawActivity.this, "Failed to load transactions", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void updateUI(List<UserTransaction> transactions) {
+        if (transactions.isEmpty()) {
+            cardNoTransfers.setVisibility(View.VISIBLE);
+            rvWithdrawTransactions.setVisibility(View.GONE);
+        } else {
+            cardNoTransfers.setVisibility(View.GONE);
+            rvWithdrawTransactions.setVisibility(View.VISIBLE);
+            TransactionAdapter adapter = new TransactionAdapter(transactions);
+            rvWithdrawTransactions.setAdapter(adapter);
+        }
     }
 }

@@ -81,67 +81,54 @@
         <!-- Current Balance -->
         <TextView
             android:id="@+id/tvCurrentBalance"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Current Balance: $0.00"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Current Balance: ₱ 0.00"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="18sp" />
 
         <!-- Withdraw Amount -->
         <EditText
             android:id="@+id/etWithdrawAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Withdraw Amount"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/white"
+            android:hint="Enter amount to withdraw"
             android:inputType="numberDecimal"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray" />
 
         <!-- Account Number -->
         <EditText
             android:id="@+id/etAccountNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Account Number"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/white"
+            android:hint="Enter account number"
             android:inputType="number"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Currency Spinner -->
-        <Spinner
-            android:id="@+id/spinnerCurrency"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray" />
 
         <!-- Withdraw Button -->
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button"
+        <Button
             android:id="@+id/btnWithdraw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="?attr/colorPrimary"
-            android:fontFamily="@font/inter_semibold"
+            android:layout_marginBottom="24dp"
             android:text="Withdraw"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="12dp" />
-
-        <!-- Withdraw Transactions -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvWithdrawTransactions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:textAllCaps="false" />
 
         <!-- No transfers message -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardNoTransfers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
-            app:cardCornerRadius="60dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@android:color/white">
 
@@ -153,6 +140,7 @@
                 android:padding="16dp">
 
                 <ImageView
+                    android:id="@+id/iconNoTransfers"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_marginBottom="16dp"
@@ -160,6 +148,7 @@
                     app:tint="@color/gray" />
 
                 <TextView
+                    android:id="@+id/tvNoTransfersMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
@@ -168,6 +157,13 @@
                     android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- RecyclerView for transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWithdrawTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 </ScrollView>
