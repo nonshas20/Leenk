@@ -83,6 +83,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
 
     private void navigateToMyAccount() {
         Intent intent = new Intent(this, MyAccountActivity.class);
+        intent.putExtra("USER_ID", userId);
         startActivity(intent);
     }
 

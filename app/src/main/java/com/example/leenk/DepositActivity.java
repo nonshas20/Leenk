@@ -33,9 +33,7 @@ public class DepositActivity extends AppCompatActivity {
         setContentView(R.layout.activity_deposit);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        userId = FirebaseAuth.getInstance().getCurrentUser() != null ?
-                FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
-
+        userId = getIntent().getStringExtra("USER_ID");
         initializeViews();
         setupClickListeners();
     }
