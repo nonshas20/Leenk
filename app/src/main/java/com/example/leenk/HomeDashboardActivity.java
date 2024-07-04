@@ -31,14 +31,19 @@ import java.util.List;
 
 public class HomeDashboardActivity extends AppCompatActivity {
 
-    private TextView tvBalance, tvAccountNumber, tvExpirationDate, tvCVV, tvName;
-    private ImageButton btnToggleBalance, btnDeposit, btnScanQR, btnSend, btnTransfer;
-    private Button btnMyAccount, btnHelpCenter;
+    private TextView tvBalance, tvAccountNumber, tvCardNumber, tvExpirationDate, tvCVV, tvName;
+    private ImageButton btnToggleBalance, btnDeposit, btnScanQR, btnSend, btnTransfer, btnToggleCardDetails;
+    private Button btnMyAccount, btnHelpCenter, btnAllTransactions;
     private RecyclerView rvRecentTransactions;
     private DatabaseReference mDatabase;
     private String userId;
     private boolean isBalanceVisible = true;
+    private boolean isCardDetailsVisible = true;
     private double currentBalance = 0.00;
+
+    private String accountNumber;
+    private String expirationDate;
+    private String cvv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
     private void initializeViews() {
         tvBalance = findViewById(R.id.tvBalance);
         tvAccountNumber = findViewById(R.id.tvAccountNumber);
+        tvCardNumber = findViewById(R.id.tvCardNumber);
         tvExpirationDate = findViewById(R.id.tvExpirationDate);
         tvCVV = findViewById(R.id.tvCVV);
         tvName = findViewById(R.id.tvName);
@@ -67,6 +73,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnTransfer = findViewById(R.id.btnTransfer);
         btnMyAccount = findViewById(R.id.btnMyAccount);
         btnHelpCenter = findViewById(R.id.btnHelpCenter);
+        btnToggleCardDetails = findViewById(R.id.btnToggleCardDetails);
+        btnAllTransactions = findViewById(R.id.btnAllTransactions);
         rvRecentTransactions = findViewById(R.id.rvRecentTransactions);
         rvRecentTransactions.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -79,23 +87,61 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnTransfer.setOnClickListener(v -> showLeenkToLeenkDialog());
         btnMyAccount.setOnClickListener(v -> navigateToMyAccount());
         btnHelpCenter.setOnClickListener(v -> Toast.makeText(this, "Help Center clicked", Toast.LENGTH_SHORT).show());
+        btnToggleCardDetails.setOnClickListener(v -> toggleCardDetailsVisibility());
+        btnAllTransactions.setOnClickListener(v -> showAllTransactions());
+    }
+
+    private void toggleBalanceVisibility() {
+        if (isBalanceVisible) {
+            String balance = tvBalance.getText().toString();
+            String pesoSign = balance.substring(0, 2); // Assuming "₱ " is always at the start
+            String hiddenBalance = pesoSign + "•".repeat(balance.length() - 2);
+            tvBalance.setText(hiddenBalance);
+        } else {
+            tvBalance.setText(String.format("₱ %.2f", currentBalance));
+        }
+        isBalanceVisible = !isBalanceVisible;
+        btnToggleBalance.setImageResource(isBalanceVisible ? R.drawable.eye_icon_show : R.drawable.eye_icon_hidden);
+    }
+
+    private void toggleCardDetailsVisibility() {
+        isCardDetailsVisible = !isCardDetailsVisible;
+        if (isCardDetailsVisible) {
+            showCardDetails();
+            btnToggleCardDetails.setImageResource(R.drawable.eye_icon_show);
+        } else {
+            hideCardDetails();
+            btnToggleCardDetails.setImageResource(R.drawable.eye_icon_hidden);
+        }
+    }
+
+    private void showCardDetails() {
+        tvCardNumber.setText(formatCardNumber(accountNumber));
+        tvExpirationDate.setText(expirationDate);
+        tvCVV.setText(cvv);
+    }
+
+    private void hideCardDetails() {
+        tvCardNumber.setText("**** **** **** ****");
+        tvExpirationDate.setText("**/**");
+        tvCVV.setText("***");
+    }
+
+    private String formatCardNumber(String number) {
+        StringBuilder formatted = new StringBuilder();
+        for (int i = 0; i < number.length(); i++) {
+            if (i > 0 && i % 4 == 0) {
+                formatted.append(" ");
+            }
+            formatted.append(number.charAt(i));
+        }
+        return formatted.toString();
     }
 
     private void navigateToMyAccount() {
         Intent intent = new Intent(this, MyAccountActivity.class);
         intent.putExtra("USER_ID", userId);
         startActivity(intent);
-    }
-
-    private void toggleBalanceVisibility() {
-        isBalanceVisible = !isBalanceVisible;
-        if (isBalanceVisible) {
-            tvBalance.setVisibility(View.VISIBLE);
-            btnToggleBalance.setImageResource(R.drawable.eye_icon_show);
-        } else {
-            tvBalance.setVisibility(View.INVISIBLE);
-            btnToggleBalance.setImageResource(R.drawable.eye_icon_hidden);
-        }
     }
 
     private void loadUserData() {
@@ -106,17 +152,24 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     Double balance = dataSnapshot.child("balance").getValue(Double.class);
                     currentBalance = balance != null ? balance : 0.0;
                     tvBalance.setText(String.format("₱ %.2f", currentBalance));
-                    String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
+
+                    accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
                     tvAccountNumber.setText(accountNumber);
 
-                    String expirationDate = dataSnapshot.child("expirationDate").getValue(String.class);
+                    expirationDate = dataSnapshot.child("expirationDate").getValue(String.class);
                     tvExpirationDate.setText(expirationDate);
 
-                    String cvv = dataSnapshot.child("cvv").getValue(String.class);
+                    cvv = dataSnapshot.child("cvv").getValue(String.class);
                     tvCVV.setText(cvv);
 
                     String name = dataSnapshot.child("name").getValue(String.class);
                     tvName.setText(name);
+
+                    if (isCardDetailsVisible) {
+                        showCardDetails();
+                    } else {
+                        hideCardDetails();
+                    }
                 }
             }
 
@@ -258,5 +311,15 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     loadRecentTransactions();
                 })
                 .addOnFailureListener(e -> Toast.makeText(HomeDashboardActivity.this, "Failed to add transaction", Toast.LENGTH_SHORT).show());
+    }
+
+    private void showAllTransactions() {
+        // TODO: Implement the logic to show all transactions
+        // This could be a new activity or a dialog with a full list of transactions
+        Toast.makeText(this, "Showing all transactions", Toast.LENGTH_SHORT).show();
+        // Example: Start a new activity to show all transactions
+        // Intent intent = new Intent(this, AllTransactionsActivity.class);
+        // intent.putExtra("USER_ID", userId);
+        // startActivity(intent);
     }
 }
