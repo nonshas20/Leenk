@@ -78,10 +78,68 @@
             android:textSize="18sp"
             app:cornerRadius="12dp" />
 
+        <!-- Current Balance -->
+        <TextView
+            android:id="@+id/tvCurrentBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Balance: $0.00"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Withdraw Amount -->
+        <EditText
+            android:id="@+id/etWithdrawAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Withdraw Amount"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Account Number -->
+        <EditText
+            android:id="@+id/etAccountNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Account Number"
+            android:inputType="number"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Currency Spinner -->
+        <Spinner
+            android:id="@+id/spinnerCurrency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Withdraw Button -->
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button"
+            android:id="@+id/btnWithdraw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="?attr/colorPrimary"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Withdraw"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="12dp" />
+
+        <!-- Withdraw Transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWithdrawTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"/>
+
         <!-- No transfers message -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             app:cardCornerRadius="60dp"
             app:cardElevation="4dp"
@@ -89,7 +147,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="16dp">

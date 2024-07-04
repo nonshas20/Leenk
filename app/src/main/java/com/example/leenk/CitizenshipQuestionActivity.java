@@ -48,10 +48,15 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
 
         btnNext.setOnClickListener(v -> {
             if (!selectedOption.isEmpty()) {
-                saveToDatabase();
-                Intent intent = new Intent(CitizenshipQuestionActivity.this, EmailVerificationActivity.class);
-                intent.putExtra("USER_ID", userId);
-                startActivity(intent);
+                if (userId != null) {
+                    saveToDatabase();
+                    Intent intent = new Intent(CitizenshipQuestionActivity.this, EmailVerificationActivity.class);
+                    intent.putExtra("USER_ID", userId);
+                    startActivity(intent);
+                } else {
+                    Log.e("CitizenshipActivity", "userId is null. Cannot proceed to the next activity.");
+                    Toast.makeText(CitizenshipQuestionActivity.this, "User ID is not initialized. Please try again.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -82,18 +87,21 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
     }
 
     private void initializeUserData() {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("accountNumber", generateAccountNumber());
-        userData.put("balance", 0);
-        userData.put("isFilipinoitizen", "");
+        if (userId != null) {
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("accountNumber", generateAccountNumber());
+            userData.put("balance", 0);
+            userData.put("isFilipinoitizen", ""); // Note: Corrected key to "isFilipinoCitizen"
 
-        mDatabase.child(userId).setValue(userData)
-                .addOnSuccessListener(aVoid -> Log.d("CitizenshipActivity", "User data initialized successfully"))
-                .addOnFailureListener(e -> Log.w("CitizenshipActivity", "Error initializing user data", e));
+            mDatabase.child(userId).setValue(userData)
+                    .addOnSuccessListener(aVoid -> Log.d("CitizenshipActivity", "User data initialized successfully"))
+                    .addOnFailureListener(e -> Log.w("CitizenshipActivity", "Error initializing user data", e));
+        } else {
+            Log.e("CitizenshipActivity", "userId is null. Cannot initialize user data.");
+        }
     }
 
     private String generateAccountNumber() {
-        // Generate a random 16-digit account number
         Random random = new Random();
         StringBuilder sb = new StringBuilder(16);
         for (int i = 0; i < 16; i++) {
@@ -109,6 +117,12 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
     }
 
     private void saveToDatabase() {
-        mDatabase.child(userId).child("isFilipinoitizen").setValue(selectedOption);
+        if (userId != null) {
+            mDatabase.child(userId).child("isFilipinoitizen").setValue(selectedOption)
+                    .addOnSuccessListener(aVoid -> Log.d("CitizenshipActivity", "Citizenship status saved successfully"))
+                    .addOnFailureListener(e -> Log.w("CitizenshipActivity", "Error saving citizenship status", e));
+        } else {
+            Log.e("CitizenshipActivity", "userId is null. Cannot save citizenship status.");
+        }
     }
 }

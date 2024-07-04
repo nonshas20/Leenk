@@ -7,12 +7,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,12 +40,10 @@ public class HomeDashboardActivity extends AppCompatActivity {
     private boolean isBalanceVisible = true;
     private double currentBalance = 0.00;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_dashboard);
-
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userId = getIntent().getStringExtra("USER_ID");
@@ -73,8 +75,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnToggleBalance.setOnClickListener(v -> toggleBalanceVisibility());
         btnDeposit.setOnClickListener(v -> showDepositDialog());
         btnScanQR.setOnClickListener(v -> Toast.makeText(this, "Scan QR clicked", Toast.LENGTH_SHORT).show());
-        btnSend.setOnClickListener(v -> showSendDialog());
-        btnTransfer.setOnClickListener(v -> Toast.makeText(this, "Transfer clicked", Toast.LENGTH_SHORT).show());
+        btnSend.setOnClickListener(v -> navigateToWithdraw());
+        btnTransfer.setOnClickListener(v -> showLeenkToLeenkDialog());
         btnMyAccount.setOnClickListener(v -> navigateToMyAccount());
         btnHelpCenter.setOnClickListener(v -> Toast.makeText(this, "Help Center clicked", Toast.LENGTH_SHORT).show());
     }
@@ -135,13 +137,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<UserTransaction> transactions = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String type = snapshot.child("type").getValue(String.class);
-                    Double amount = snapshot.child("amount").getValue(Double.class);
-                    Long timestamp = snapshot.child("timestamp").getValue(Long.class);
-                    String paymentMethod = snapshot.child("paymentMethod").getValue(String.class);  // Assuming paymentMethod is stored in Firebase
-
-                    if (type != null && amount != null && timestamp != null) {
-                        UserTransaction transaction = new UserTransaction(type, amount, timestamp, paymentMethod);
+                    UserTransaction transaction = snapshot.getValue(UserTransaction.class);
+                    if (transaction != null) {
                         transactions.add(transaction);
                     }
                 }
@@ -159,13 +156,9 @@ public class HomeDashboardActivity extends AppCompatActivity {
 
     private void showDepositDialog() {
         Intent intent = new Intent(this, DepositActivity.class);
+        intent.putExtra("USER_ID", userId);
+        intent.putExtra("CURRENT_BALANCE", currentBalance);
         startActivity(intent);
-    }
-
-    private void showSendDialog() {
-        // TODO: Implement a dialog to enter send amount and recipient
-        // For now, we'll just subtract a fixed amount
-        updateBalance(-30.00, "send");
     }
 
     private void updateBalance(double amount, String transactionType) {
@@ -188,7 +181,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                 if (committed) {
-                    addTransaction(amount, transactionType);
+                    addTransaction(amount, transactionType, "");
                     Toast.makeText(HomeDashboardActivity.this, "Balance updated successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(HomeDashboardActivity.this, "Failed to update balance", Toast.LENGTH_SHORT).show();
@@ -197,20 +190,72 @@ public class HomeDashboardActivity extends AppCompatActivity {
         });
     }
 
-    private void addTransaction(double amount, String type) {
+    private void navigateToWithdraw() {
+        Intent intent = new Intent(this, WithdrawActivity.class);
+        intent.putExtra("USER_ID", userId);
+        intent.putExtra("CURRENT_BALANCE", currentBalance);
+        startActivity(intent);
+    }
+
+    private void showLeenkToLeenkDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_leenk_to_leenk, null);
+        builder.setView(view);
+
+        EditText etAmount = view.findViewById(R.id.etAmount);
+        EditText etAccountNumber = view.findViewById(R.id.etAccountNumber);
+        Spinner spinnerCurrency = view.findViewById(R.id.spinnerCurrency);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.currencies, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCurrency.setAdapter(adapter);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String amount = etAmount.getText().toString();
+            String accountNumber = etAccountNumber.getText().toString();
+            String currency = spinnerCurrency.getSelectedItem().toString();
+
+            if (!amount.isEmpty() && !accountNumber.isEmpty()) {
+                double sendAmount = Double.parseDouble(amount);
+                processLeenkToLeenkTransfer(sendAmount, accountNumber, currency);
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void processLeenkToLeenkTransfer(double amount, String accountNumber, String currency) {
+        if (amount > currentBalance) {
+            Toast.makeText(this, "Insufficient balance", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        updateBalance(-amount, "withdraw");
+        addTransaction(-amount, "withdraw", "Leenk to Leenk transfer to " + accountNumber + " (" + currency + ")");
+    }
+
+    private void addTransaction(double amount, String type, String description) {
         if (userId == null) {
             Toast.makeText(this, "User ID is not available", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
-        long timestamp = System.currentTimeMillis();  // Get current timestamp
+        long timestamp = System.currentTimeMillis();
 
-        // Assuming paymentMethod is not always required
-        UserTransaction transaction = new UserTransaction(type, amount, timestamp, null);
+        UserTransaction transaction = new UserTransaction(type, amount, timestamp, description);
 
         mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
-                .addOnSuccessListener(aVoid -> Toast.makeText(HomeDashboardActivity.this, "Transaction added successfully", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(HomeDashboardActivity.this, "Transaction added successfully", Toast.LENGTH_SHORT).show();
+                    loadRecentTransactions();
+                })
                 .addOnFailureListener(e -> Toast.makeText(HomeDashboardActivity.this, "Failed to add transaction", Toast.LENGTH_SHORT).show());
     }
 }

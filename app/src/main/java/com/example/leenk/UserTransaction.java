@@ -4,17 +4,28 @@ public class UserTransaction {
     private String type;
     private double amount;
     private long timestamp;
+    private String description;
     private String paymentMethod;
 
-    // Default constructor required for calls to DataSnapshot.getValue(UserTransaction.class)
+    // Default constructor
     public UserTransaction() {
     }
 
-    // Constructor matching your parameters
-    public UserTransaction(String type, double amount, long timestamp, String paymentMethod) {
+    // Constructor with 4 parameters
+    public UserTransaction(String type, double amount, long timestamp, String description) {
         this.type = type;
         this.amount = amount;
         this.timestamp = timestamp;
+        this.description = description;
+        this.paymentMethod = ""; // Default empty string for payment method
+    }
+
+    // Constructor with 5 parameters
+    public UserTransaction(String type, double amount, long timestamp, String description, String paymentMethod) {
+        this.type = type;
+        this.amount = amount;
+        this.timestamp = timestamp;
+        this.description = description;
         this.paymentMethod = paymentMethod;
     }
 
@@ -49,5 +60,13 @@ public class UserTransaction {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

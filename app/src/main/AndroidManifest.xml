@@ -38,6 +38,7 @@
         <activity android:name=".HomeDashboardActivity" />
         <activity android:name=".DepositActivity" />
         <activity android:name=".MyAccountActivity" />
+        <activity android:name=".WithdrawActivity" />
 
 
 

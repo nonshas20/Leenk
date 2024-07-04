@@ -11,4 +11,10 @@
         <item>Davao</item>
 
     </string-array>
+    <string-array name="currencies">
+        <item>PHP</item>
+        <item>USD</item>
+        <item>EUR</item>
+        <!-- Add more currencies as needed -->
+    </string-array>
 </resources>
