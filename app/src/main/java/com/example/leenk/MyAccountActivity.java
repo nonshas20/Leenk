@@ -70,14 +70,31 @@ public class MyAccountActivity extends AppCompatActivity {
         // Load user data
         loadUserData(userId);
     }
+    private void setInfoItemValue(View layout, String label, String value) {
+        TextView tvLabel = layout.findViewById(R.id.tvLabel);
+        TextView tvValue = layout.findViewById(R.id.tvValue);
+        tvLabel.setText(label);
+        tvValue.setText(value != null ? value : "N/A");
+    }
+
+    private void setInfoItemWithButtonValue(View layout, String label, String value, String buttonText) {
+        setInfoItemValue(layout, label, value);
+        Button btnAction = layout.findViewById(R.id.btnAction);
+        btnAction.setText(buttonText);
+        btnAction.setOnClickListener(v -> {
+            // Handle button click (e.g., change or verify)
+            Toast.makeText(MyAccountActivity.this, buttonText + " clicked for " + label, Toast.LENGTH_SHORT).show();
+        });
+    }
 
     private void loadUserData(String userId) {
         mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Retrieve user data
                     String accountNumber = dataSnapshot.child("accountNumber").getValue(String.class);
+                    tvAccountNumber.setText(accountNumber != null ? accountNumber : "N/A");
+
                     DataSnapshot basicInfoSnapshot = dataSnapshot.child("basic_info");
                     String firstName = basicInfoSnapshot.child("first_name").getValue(String.class);
                     String middleName = basicInfoSnapshot.child("middle_name").getValue(String.class);
@@ -85,12 +102,26 @@ public class MyAccountActivity extends AppCompatActivity {
                     String fullName = (firstName != null ? firstName : "") + " " +
                             (middleName != null ? middleName : "") + " " +
                             (lastName != null ? lastName : "");
+                    setInfoItemValue(findViewById(R.id.layoutFullName), "Full name", fullName.trim());
+
                     String dateOfBirth = basicInfoSnapshot.child("date_of_birth").getValue(String.class);
+                    setInfoItemValue(findViewById(R.id.layoutDateOfBirth), "Date of birth", dateOfBirth);
 
                     DataSnapshot homeAddressSnapshot = dataSnapshot.child("home_address");
                     String country = homeAddressSnapshot.child("country").getValue(String.class);
+                    setInfoItemValue(findViewById(R.id.layoutCountryOfBirth), "Country of birth", country);
+
+                    // ID number is not present in your structure, so we'll set it to N/A
+                    setInfoItemValue(findViewById(R.id.layoutIdNumber), "ID number", "N/A");
+
                     String username = dataSnapshot.child("username").getValue(String.class);
-                    String emailAddress = dataSnapshot.child("email").getValue(String.class);
+                    setInfoItemValue(findViewById(R.id.layoutUsername), "Username", username);
+
+                    // Mobile number is not present in your structure, so we'll set it to N/A
+                    setInfoItemWithButtonValue(findViewById(R.id.layoutMobileNumber), "Mobile number", "N/A", "Change");
+
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    setInfoItemWithButtonValue(findViewById(R.id.layoutEmailAddress), "Email address", email, "Verify");
 
                     String houseNumber = homeAddressSnapshot.child("house_number").getValue(String.class);
                     String street = homeAddressSnapshot.child("street").getValue(String.class);
@@ -100,26 +131,9 @@ public class MyAccountActivity extends AppCompatActivity {
                             (street != null ? street + ", " : "") +
                             (barangay != null ? barangay + ", " : "") +
                             (province != null ? province : "");
+                    setInfoItemWithButtonValue(findViewById(R.id.layoutHomeAddress), "Home address", homeAddress.trim(), "Change");
 
-                    // Set the data to views
-                    tvAccountNumber.setText(accountNumber != null ? accountNumber : "N/A");
-                    tvFullName.setText(!fullName.trim().isEmpty() ? fullName : "N/A");
-                    tvDateOfBirth.setText(dateOfBirth != null ? dateOfBirth : "N/A");
-                    tvCountryOfBirth.setText(country != null ? country : "N/A");
-                    tvUsername.setText(username != null ? username : "N/A");
-                    tvEmailAddress.setText(emailAddress != null ? emailAddress : "N/A");
-                    tvHomeAddress.setText(!homeAddress.trim().isEmpty() ? homeAddress : "N/A");
-
-                    // Log the data for debugging
-                    Log.d("MyAccountActivity", "Account Number: " + accountNumber);
-                    Log.d("MyAccountActivity", "Full Name: " + fullName);
-                    Log.d("MyAccountActivity", "Date of Birth: " + dateOfBirth);
-                    Log.d("MyAccountActivity", "Country: " + country);
-                    Log.d("MyAccountActivity", "Username: " + username);
-                    Log.d("MyAccountActivity", "Email Address: " + emailAddress);
-                    Log.d("MyAccountActivity", "Home Address: " + homeAddress);
                 } else {
-                    Log.d("MyAccountActivity", "No data found for user: " + userId);
                     Toast.makeText(MyAccountActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -127,7 +141,6 @@ public class MyAccountActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(MyAccountActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
-                Log.e("MyAccountActivity", "Database Error: " + databaseError.getMessage());
             }
         });
     }
