@@ -320,12 +320,10 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void showAllTransactions() {
-        // TODO: Implement the logic to show all transactions
-        // This could be a new activity or a dialog with a full list of transactions
-        Toast.makeText(this, "Showing all transactions", Toast.LENGTH_SHORT).show();
-        // Example: Start a new activity to show all transactions
-        // Intent intent = new Intent(this, AllTransactionsActivity.class);
-        // intent.putExtra("USER_ID", userId);
-        // startActivity(intent);
+        Intent intent = new Intent(this, AllTransactionsActivity.class);
+        intent.putExtra("USER_ID", userId);
+        intent.putExtra("BALANCE", currentBalance);
+        intent.putExtra("ACCOUNT_NUMBER", accountNumber);
+        startActivity(intent);
     }
 }

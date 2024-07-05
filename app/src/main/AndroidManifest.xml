@@ -39,6 +39,7 @@
         <activity android:name=".DepositActivity" />
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".WithdrawActivity" />
+        <activity android:name=".AllTransactionsActivity" />
 
 
 

@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -19,18 +20,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         this.transactions = transactions;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserTransaction transaction = transactions.get(position);
-        holder.tvType.setText(transaction.getType());
-        holder.tvAmount.setText(String.format("₱ %.2f", transaction.getAmount()));
-        holder.tvTimestamp.setText(new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(new Date(transaction.getTimestamp())));
+        holder.bind(transaction);
     }
 
     @Override
@@ -38,14 +38,38 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         return transactions.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvType, tvAmount, tvTimestamp;
+    public void updateList(List<UserTransaction> newList) {
+        this.transactions = newList;
+        notifyDataSetChanged();
+    }
 
-        public ViewHolder(View itemView) {
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvType, tvAmount, tvDescription, tvTimestamp;
+
+        ViewHolder(View itemView) {
             super(itemView);
             tvType = itemView.findViewById(R.id.tvType);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+        }
+
+        void bind(UserTransaction transaction) {
+            tvType.setText(transaction.getType());
+            tvAmount.setText(String.format(Locale.getDefault(), "₱ %.2f", transaction.getAmount()));
+            tvDescription.setText(transaction.getDescription());
+            tvTimestamp.setText(formatDate(transaction.getTimestamp()));
+
+            // Set color based on transaction type
+            int color = transaction.getType().equalsIgnoreCase("deposit") ?
+                    itemView.getContext().getColor(R.color.green) :
+                    itemView.getContext().getColor(R.color.red);
+            tvAmount.setTextColor(color);
+        }
+
+        private String formatDate(long timestamp) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+            return sdf.format(new Date(timestamp));
         }
     }
 }
