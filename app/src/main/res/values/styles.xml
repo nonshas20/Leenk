@@ -7,11 +7,11 @@
 
     <!-- Style for the number pad buttons -->
     <style name="NumberPadButton">
-        <item name="android:layout_width">80dp</item>
-        <item name="android:layout_height">80dp</item>
-        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">@color/button_text_color</item>
-        <item name="android:background">@drawable/circular_button_background</item>
+
+        <item name="android:background">@drawable/number_pad_button_background</item>
+        <item name="android:layout_margin">8dp</item>
     </style>
 </resources>

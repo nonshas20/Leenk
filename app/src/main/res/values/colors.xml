@@ -18,6 +18,7 @@
     <color name="gray">#8E8E93</color>
     <color name="cyan">#5AC8FA</color>
     <color name="dark_backgroundd">#1E1E1E</color>
+    <color name="colorAccent">#007AFF</color>
     <color name="card_background">#2D2D2D</color>
     <color name="search_background">#3D3D3D</color>
 
