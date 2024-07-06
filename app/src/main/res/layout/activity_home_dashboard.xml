@@ -12,14 +12,39 @@
         android:padding="24dp">
 
         <!-- Image at the very top -->
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/logotransaparenttext"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:layout_marginBottom="2dp"/>
-        0
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnMyAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_account"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                app:tint="#d7094f" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/logotransaparenttext"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true" />
+
+            <ImageButton
+                android:id="@+id/btnHelpCenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_help"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                app:tint="#d7094f" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
@@ -89,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="0sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -189,7 +214,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/down"
                     android:contentDescription="Deposit"
-                    app:backgroundTint="#d7094f"
+                    android:background="@color/light_blue"
                     app:elevation="6dp"/>
 
                 <TextView
@@ -212,7 +237,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/scan_qr"
                     android:contentDescription="Scan QR"
-                    app:backgroundTint="#d7094f"
+                    android:background="@color/light_blue"
                     app:elevation="6dp"/>
 
                 <TextView
@@ -235,7 +260,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/money"
                     android:contentDescription="Send"
-                    app:backgroundTint="#d7094f"
+                    android:background="@color/light_blue"
                     app:elevation="6dp"/>
 
                 <TextView
@@ -258,7 +283,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/transfer"
                     android:contentDescription="Transfer"
-                    app:backgroundTint="#d7094f"
+                    android:background="@color/light_blue"
                     app:elevation="6dp"/>
 
                 <TextView
@@ -276,7 +301,7 @@
             android:layout_marginTop="24dp">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/btnMyAccount"
+                android:id="@+id/btnBuyLoad"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -289,28 +314,27 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="12dp"
-                    android:gravity="center_vertical"
-
-                    app:tint="#2196F3" >
+                    android:gravity="center_vertical">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_account"
+                        android:src="@drawable/ic_phone"
                         android:layout_marginEnd="8dp"
                         app:tint="#2196F3" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="My Account"
+                        android:text="Buy Load"
+                        android:textStyle="bold"
                         android:textColor="#333333"
                         android:textSize="14sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/btnHelpCenter"
+                android:id="@+id/btnPayBills"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -328,14 +352,15 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_help"
+                        android:src="@drawable/ic_paybills"
                         android:layout_marginEnd="8dp"
                         app:tint="#2196F3" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Help Center"
+                        android:text="Pay Bills"
+                        android:textStyle="bold"
                         android:textColor="#333333"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -370,11 +395,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="All"
+                    android:background="@color/light_blue"
                     android:textColor="#333333"
                     android:textSize="14sp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingTop="8dp"
+                    android:textStyle="bold"
                     android:paddingBottom="8dp" />
             </androidx.cardview.widget.CardView>
         </LinearLayout>

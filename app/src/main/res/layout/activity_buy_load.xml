@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/logotransaparenttext"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true" />
+
+
+    </LinearLayout>
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Available balance"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Balance after"
+            android:textSize="16sp"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/tvAvailableBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="₱ 0.00"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvBalanceAfter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="₱ 0.00"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_philippines"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(+63)"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"/>
+
+        <EditText
+            android:id="@+id/etPhoneNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Mobile number"
+            android:inputType="phone"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_contacts"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter custom amount"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Regular load"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardGlobe"
+            style="@style/NetworkCardStyle"
+            app:cardBackgroundColor="@color/globe_color">
+            <TextView
+                style="@style/NetworkTextStyle"
+                android:text="Globe" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardSmart"
+            style="@style/NetworkCardStyle"
+            app:cardBackgroundColor="@color/smart_color">
+            <TextView
+                style="@style/NetworkTextStyle"
+                android:text="Smart" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTnt"
+            style="@style/NetworkCardStyle"
+            app:cardBackgroundColor="@color/tnt_color">
+            <TextView
+                style="@style/NetworkTextStyle"
+                android:text="TNT" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTm"
+            style="@style/NetworkCardStyle"
+            app:cardBackgroundColor="@color/tm_color">
+            <TextView
+                style="@style/NetworkTextStyle"
+                android:text="TM" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardDito"
+            style="@style/NetworkCardStyle"
+            app:cardBackgroundColor="@color/dito_color">
+            <TextView
+                style="@style/NetworkTextStyle"
+                android:text="Dito" />
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card10"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="10 PHP\nPay: ₱ 10.00"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card50"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="50 PHP\nPay: ₱ 50.00"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card100"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="100 PHP\nPay: ₱ 100.00"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card300"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="300 PHP\nPay: ₱ 300.00"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card500"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="500 PHP\nPay: ₱ 500.00"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card1000"
+            style="@style/AmountCardStyle">
+            <TextView
+                style="@style/AmountTextStyle"
+                android:text="1000 PHP\nPay: ₱ 1,000.00"/>
+        </androidx.cardview.widget.CardView>
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/btnBuyLoad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_button"/>
+
+
+</LinearLayout>

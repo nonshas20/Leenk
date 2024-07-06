@@ -37,6 +37,7 @@
         <activity android:name=".LoginPasscodeActivity" />
         <activity android:name=".HomeDashboardActivity" />
         <activity android:name=".DepositActivity" />
+        <activity android:name=".BuyLoadActivity" />
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".WithdrawActivity" />
         <activity android:name=".AllTransactionsActivity" />

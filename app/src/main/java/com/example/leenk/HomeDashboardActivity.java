@@ -34,7 +34,9 @@ public class HomeDashboardActivity extends AppCompatActivity {
 
     private TextView tvBalance, tvAccountNumber, tvCardNumber, tvExpirationDate, tvCVV, tvName;
     private ImageButton btnToggleBalance, btnDeposit, btnScanQR, btnSend, btnTransfer, btnToggleCardDetails;
-    private CardView btnMyAccount, btnHelpCenter, btnAllTransactions;
+    private ImageButton btnMyAccount, btnHelpCenter; // Changed to ImageButton
+    private CardView btnBuyLoad, btnPayBills; // Added new buttons
+    private CardView btnAllTransactions;
     private RecyclerView rvRecentTransactions;
     private DatabaseReference mDatabase;
 
@@ -47,6 +49,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
     private String accountNumber;
     private String expirationDate;
     private String cvv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +79,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnTransfer = findViewById(R.id.btnTransfer);
         btnMyAccount = findViewById(R.id.btnMyAccount);
         btnHelpCenter = findViewById(R.id.btnHelpCenter);
+        btnBuyLoad = findViewById(R.id.btnBuyLoad);
+        btnPayBills = findViewById(R.id.btnPayBills);
         btnToggleCardDetails = findViewById(R.id.btnToggleCardDetails);
         btnAllTransactions = findViewById(R.id.btnAllTransactions);
         rvRecentTransactions = findViewById(R.id.rvRecentTransactions);
@@ -91,6 +96,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnMyAccount.setOnClickListener(v -> navigateToMyAccount());
         btnHelpCenter.setOnClickListener(v -> Toast.makeText(this, "Help Center clicked", Toast.LENGTH_SHORT).show());
         btnToggleCardDetails.setOnClickListener(v -> toggleCardDetailsVisibility());
+        btnBuyLoad.setOnClickListener(v -> navigateToBuyLoad());
+        btnPayBills.setOnClickListener(v -> navigateToPayBills());
         btnAllTransactions.setOnClickListener(v -> showAllTransactions());
     }
 
@@ -105,6 +112,16 @@ public class HomeDashboardActivity extends AppCompatActivity {
         }
         isBalanceVisible = !isBalanceVisible;
         btnToggleBalance.setImageResource(isBalanceVisible ? R.drawable.eye_icon_show : R.drawable.eye_icon_hidden);
+    }
+    private void navigateToBuyLoad() {
+        Intent intent = new Intent(this, BuyLoadActivity.class);
+        intent.putExtra("USER_ID", userId);
+        startActivity(intent);
+    }
+
+    private void navigateToPayBills() {
+        // TODO: Implement navigation to Pay Bills page
+        Toast.makeText(this, "Navigate to Pay Bills", Toast.LENGTH_SHORT).show();
     }
 
     private void toggleCardDetailsVisibility() {

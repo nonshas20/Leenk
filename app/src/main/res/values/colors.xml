@@ -21,6 +21,13 @@
     <color name="colorAccent">#007AFF</color>
     <color name="card_background">#2D2D2D</color>
     <color name="search_background">#3D3D3D</color>
+    <color name="globe_color">#0064DE</color>
+    <color name="smart_color">#00B9F1</color>
+    <color name="tnt_color">#FFA500</color>
+    <color name="tm_color">#E20074</color>
+    <color name="dito_color">#FF0000</color>
+
+
 
     
 </resources>
