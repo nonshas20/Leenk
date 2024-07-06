@@ -98,7 +98,15 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnToggleCardDetails.setOnClickListener(v -> toggleCardDetailsVisibility());
         btnBuyLoad.setOnClickListener(v -> navigateToBuyLoad());
         btnPayBills.setOnClickListener(v -> navigateToPayBills());
+        btnScanQR.setOnClickListener(v -> startQRScanner());
         btnAllTransactions.setOnClickListener(v -> showAllTransactions());
+    }
+
+    private void startQRScanner() {
+        Intent intent = new Intent(this, QRScannerActivity.class);
+        intent.putExtra("USER_ID", userId);
+        intent.putExtra("CURRENT_BALANCE", currentBalance);
+        startActivity(intent);
     }
 
     private void toggleBalanceVisibility() {

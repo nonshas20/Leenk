@@ -42,10 +42,17 @@ public class WithdrawActivity extends AppCompatActivity {
         userId = getIntent().getStringExtra("USER_ID");
         currentBalance = getIntent().getDoubleExtra("CURRENT_BALANCE", 0.0);
 
+
+
         initializeViews();
         setupClickListeners();
         updateBalanceDisplay();
         loadWithdrawTransactions();
+
+        String qrResult = getIntent().getStringExtra("QR_RESULT");
+        if (qrResult != null) {
+            handleQRResult(qrResult);
+        }
     }
 
     private void initializeViews() {
@@ -56,6 +63,12 @@ public class WithdrawActivity extends AppCompatActivity {
         rvWithdrawTransactions = findViewById(R.id.rvWithdrawTransactions);
         cardNoTransfers = findViewById(R.id.cardNoTransfers);
         rvWithdrawTransactions.setLayoutManager(new LinearLayoutManager(this));
+    }
+    private void handleQRResult(String qrResult) {
+        // Here you can parse the QR result and populate the withdrawal fields
+        // For example, if the QR code contains an account number:
+        etAccountNumber.setText(qrResult);
+        // You might also want to set a default amount or parse it from the QR code
     }
 
     private void setupClickListeners() {
