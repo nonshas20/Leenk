@@ -128,8 +128,9 @@ public class HomeDashboardActivity extends AppCompatActivity {
     }
 
     private void navigateToPayBills() {
-        // TODO: Implement navigation to Pay Bills page
-        Toast.makeText(this, "Navigate to Pay Bills", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, PayBillsActivity.class);
+        intent.putExtra("USER_ID", userId);
+        startActivity(intent);
     }
 
     private void toggleCardDetailsVisibility() {

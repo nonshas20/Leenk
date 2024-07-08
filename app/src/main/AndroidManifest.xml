@@ -47,6 +47,7 @@
             android:name=".QRScannerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".PayBillsActivity" />
 
 
 
