@@ -62,23 +62,7 @@
             android:textSize="18sp"
             app:cornerRadius="12dp" />
 
-        <!-- BANK -->
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="#2C2C2E"
-            android:fontFamily="@font/inter_semibold"
-            android:gravity="start|center_vertical"
-            android:padding="16dp"
-            android:text="Bank"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="12dp" />
 
-        <!-- Current Balance -->
         <TextView
             android:id="@+id/tvCurrentBalance"
             android:layout_width="match_parent"
@@ -113,14 +97,18 @@
             android:textColor="@color/white"
             android:textColorHint="@color/gray" />
 
-        <!-- Withdraw Button -->
+
         <Button
             android:id="@+id/btnWithdraw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:text="Withdraw"
-            android:textAllCaps="false" />
+            android:layout_marginTop="2dp"
+            android:padding="16dp"
+            app:cornerRadius="8dp"
+            android:backgroundTint="#2C2C2E"
+            android:textColor="@color/button_text_color"
+            android:textStyle="bold" />
 
         <!-- No transfers message -->
         <androidx.cardview.widget.CardView

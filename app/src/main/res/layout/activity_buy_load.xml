@@ -15,6 +15,7 @@
 
 
 
+
         <ImageView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -245,9 +246,15 @@
         android:id="@+id/btnBuyLoad"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Next"
-        android:textColor="@color/white"
-        android:background="@drawable/rounded_button"/>
+        android:text="Buy load"
+        android:layout_marginTop="2dp"
+        android:padding="16dp"
+        app:cornerRadius="8dp"
+        android:backgroundTint="#2C2C2E"
+        android:textColor="@color/button_text_color"
+        android:textStyle="bold" />
+
+
 
 
 </LinearLayout>
