@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_background">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back1"
-                app:tint="@color/white" />
+                app:tint="@color/black" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -33,18 +33,10 @@
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Send &amp; Transfer"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
 
-            <ImageButton
-                android:id="@+id/btnMaximize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_maximize"
-                app:tint="@color/white" />
+
         </RelativeLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -70,7 +62,7 @@
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/inter_semibold"
             android:text="Current Balance: ₱ 0.00"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="18sp" />
 
         <!-- Withdraw Amount -->
@@ -78,12 +70,12 @@
             android:id="@+id/etWithdrawAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:hint="Enter amount to withdraw"
+            android:backgroundTint="@color/black"
+            android:hint="₱0.00"
             android:inputType="numberDecimal"
-            android:textColor="@color/white"
-            android:textColorHint="@color/gray" />
+            android:textSize="40sp"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
 
         <!-- Account Number -->
         <EditText
@@ -94,8 +86,8 @@
             android:backgroundTint="@color/white"
             android:hint="Enter account number"
             android:inputType="number"
-            android:textColor="@color/white"
-            android:textColorHint="@color/gray" />
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
 
 
         <Button

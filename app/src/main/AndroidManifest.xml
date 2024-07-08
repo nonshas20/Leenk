@@ -48,6 +48,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".PayBillsActivity" />
+        <activity android:name=".QRCodeDisplayActivity" />
+        <activity android:name=".AddAmountActivity" />
 
 
 

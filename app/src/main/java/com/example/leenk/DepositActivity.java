@@ -1,5 +1,7 @@
 package com.example.leenk;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +23,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DepositActivity extends AppCompatActivity {
 
@@ -61,10 +71,17 @@ public class DepositActivity extends AppCompatActivity {
         btnConfirmDeposit.setOnClickListener(v -> confirmDeposit());
         btnGCash.setOnClickListener(v -> selectPaymentMethod("GCash"));
         btnPayMaya.setOnClickListener(v -> selectPaymentMethod("PayMaya"));
+        ivQRCode.setOnClickListener(v -> {
+            Intent intent = new Intent(this, QRCodeDisplayActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
+        });
     }
+
+
+
     private void selectPaymentMethod(String method) {
         selectedPaymentMethod = method;
-        // You can add visual feedback here to show which method is selected
         Toast.makeText(this, method + " selected", Toast.LENGTH_SHORT).show();
     }
 
@@ -102,6 +119,8 @@ public class DepositActivity extends AppCompatActivity {
                 tvAccountNumber.setText("Account Number: " + accountNumber);
                 tvAccountName.setText("Account Name: " + firstName + " " + lastName);
                 tvCurrentBalance.setText(String.format("₱ %.2f", balance != null ? balance : 0.00));
+
+                generateAndDisplayQRCode();
             }
 
             @Override
@@ -109,6 +128,30 @@ public class DepositActivity extends AppCompatActivity {
                 Toast.makeText(DepositActivity.this, "Failed to load account details", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void generateAndDisplayQRCode() {
+        String accountNumber = tvAccountNumber.getText().toString().replace("Account Number: ", "");
+        String accountName = tvAccountName.getText().toString().replace("Account Name: ", "");
+
+        JSONObject qrData = new JSONObject();
+        try {
+            qrData.put("accountNumber", accountNumber);
+            qrData.put("accountName", accountName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MultiFormatWriter writer = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = writer.encode(qrData.toString(), BarcodeFormat.QR_CODE, 512, 512);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            ivQRCode.setImageBitmap(bitmap);
+            ivQRCode.setVisibility(View.VISIBLE);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
     }
 
     private void processDeposit(final double amount, final String paymentMethod) {
