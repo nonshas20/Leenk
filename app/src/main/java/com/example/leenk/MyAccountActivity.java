@@ -2,6 +2,17 @@ package com.example.leenk;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.text.InputType;
+import android.widget.EditText;
+import androidx.appcompat.app.AlertDialog;
+import java.util.HashMap;
+import java.util.Map;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,13 +38,14 @@ public class MyAccountActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_account);
 
-        String userId = getIntent().getStringExtra("USER_ID");
+        userId = getIntent().getStringExtra("USER_ID");
         if (userId == null) {
             Toast.makeText(this, "User ID not found", Toast.LENGTH_SHORT).show();
             finish();
@@ -45,6 +57,20 @@ public class MyAccountActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference("users");
 
         // Initialize views
+        initializeViews();
+
+        // Set up TabLayout
+        tabLayout.addTab(tabLayout.newTab().setText("Info"));
+
+        // Set up click listeners
+        btnBack.setOnClickListener(v -> finish());
+        btnCopy.setOnClickListener(v -> copyAccountNumber());
+
+        // Load user data
+        loadUserData(userId);
+    }
+
+    private void initializeViews() {
         tvAccountNumber = findViewById(R.id.tvAccountNumber);
         tvFullName = findViewById(R.id.layoutFullName).findViewById(R.id.tvValue);
         tvDateOfBirth = findViewById(R.id.layoutDateOfBirth).findViewById(R.id.tvValue);
@@ -58,17 +84,6 @@ public class MyAccountActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnCopy = findViewById(R.id.btnCopy);
         tabLayout = findViewById(R.id.tabLayout);
-
-        // Set up TabLayout
-        tabLayout.addTab(tabLayout.newTab().setText("Info"));
-        tabLayout.addTab(tabLayout.newTab().setText("Limits"));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
-
-        // Set up click listeners
-        btnBack.setOnClickListener(v -> finish());
-
-        // Load user data
-        loadUserData(userId);
     }
 
     private void setInfoItemValue(View layout, String label, String value) {
@@ -83,10 +98,14 @@ public class MyAccountActivity extends AppCompatActivity {
         Button btnAction = layout.findViewById(R.id.btnAction);
         btnAction.setText(buttonText);
         btnAction.setOnClickListener(v -> {
-            // Handle button click (e.g., change or verify)
-            Toast.makeText(MyAccountActivity.this, buttonText + " clicked for " + label, Toast.LENGTH_SHORT).show();
+            if (label.equals("Home address")) {
+                openEditHomeAddressDialog(value);
+            } else {
+                Toast.makeText(MyAccountActivity.this, buttonText + " clicked for " + label, Toast.LENGTH_SHORT).show();
+            }
         });
     }
+
 
     private void loadUserData(String userId) {
         mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -125,15 +144,13 @@ public class MyAccountActivity extends AppCompatActivity {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     setInfoItemWithButtonValue(findViewById(R.id.layoutEmailAddress), "Email address", email, "Verify");
 
+
                     String houseNumber = homeAddressSnapshot.child("house_number").getValue(String.class);
                     String street = homeAddressSnapshot.child("street").getValue(String.class);
                     String barangay = homeAddressSnapshot.child("barangay").getValue(String.class);
                     String province = homeAddressSnapshot.child("province").getValue(String.class);
-                    String homeAddress = (houseNumber != null ? houseNumber + ", " : "") +
-                            (street != null ? street + ", " : "") +
-                            (barangay != null ? barangay + ", " : "") +
-                            (province != null ? province : "");
-                    setInfoItemWithButtonValue(findViewById(R.id.layoutHomeAddress), "Home address", homeAddress.trim(), "Change");
+                    String homeAddress = formatHomeAddress(houseNumber, street, barangay, province);
+                    setInfoItemWithButtonValue(findViewById(R.id.layoutHomeAddress), "Home address", homeAddress, "Change");
 
                 } else {
                     Toast.makeText(MyAccountActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
@@ -145,5 +162,56 @@ public class MyAccountActivity extends AppCompatActivity {
                 Toast.makeText(MyAccountActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String formatHomeAddress(String houseNumber, String street, String barangay, String province) {
+        StringBuilder sb = new StringBuilder();
+        if (houseNumber != null) sb.append(houseNumber).append(", ");
+        if (street != null) sb.append(street).append(", ");
+        if (barangay != null) sb.append(barangay).append(", ");
+        if (province != null) sb.append(province);
+        return sb.toString().trim();
+    }
+
+    private void openEditHomeAddressDialog(String currentAddress) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Home Address");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setText(currentAddress);
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newAddress = input.getText().toString();
+            updateHomeAddress(newAddress);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void updateHomeAddress(String newAddress) {
+        String[] addressParts = newAddress.split(",");
+        Map<String, Object> updates = new HashMap<>();
+
+        if (addressParts.length >= 1) updates.put("house_number", addressParts[0].trim());
+        if (addressParts.length >= 2) updates.put("street", addressParts[1].trim());
+        if (addressParts.length >= 3) updates.put("barangay", addressParts[2].trim());
+        if (addressParts.length >= 4) updates.put("province", addressParts[3].trim());
+
+        mDatabase.child(userId).child("home_address").updateChildren(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(MyAccountActivity.this, "Home address updated successfully", Toast.LENGTH_SHORT).show();
+                    tvHomeAddress.setText(newAddress);
+                })
+                .addOnFailureListener(e -> Toast.makeText(MyAccountActivity.this, "Failed to update home address", Toast.LENGTH_SHORT).show());
+    }
+
+    private void copyAccountNumber() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Account Number", tvAccountNumber.getText());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(this, "Account number copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 }

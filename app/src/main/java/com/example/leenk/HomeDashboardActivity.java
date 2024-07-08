@@ -316,14 +316,87 @@ public class HomeDashboardActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void processLeenkToLeenkTransfer(double amount, String accountNumber, String currency) {
+    private void processLeenkToLeenkTransfer(double amount, String recipientAccountNumber, String currency) {
+        if (amount <= 0) {
+            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (amount > currentBalance) {
             Toast.makeText(this, "Insufficient balance", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        updateBalance(-amount, "withdraw");
-        addTransaction(-amount, "withdraw", "Leenk to Leenk transfer to " + accountNumber + " (" + currency + ")");
+        // First, find the recipient user by account number
+        mDatabase.child("users").orderByChild("accountNumber").equalTo(recipientAccountNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                String recipientUserId = userSnapshot.getKey();
+                                performTransfer(amount, recipientUserId, recipientAccountNumber, currency);
+                                return;
+                            }
+                        } else {
+                            Toast.makeText(HomeDashboardActivity.this, "Recipient account not found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(HomeDashboardActivity.this, "Failed to find recipient", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void performTransfer(double amount, String recipientUserId, String recipientAccountNumber, String currency) {
+        mDatabase.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                MutableData senderBalanceData = mutableData.child("users").child(userId).child("balance");
+                MutableData recipientBalanceData = mutableData.child("users").child(recipientUserId).child("balance");
+
+                Double senderBalance = senderBalanceData.getValue(Double.class);
+                Double recipientBalance = recipientBalanceData.getValue(Double.class);
+
+                if (senderBalance == null || recipientBalance == null) {
+                    return Transaction.abort();
+                }
+
+                if (senderBalance < amount) {
+                    return Transaction.abort();
+                }
+
+                senderBalanceData.setValue(senderBalance - amount);
+                recipientBalanceData.setValue(recipientBalance + amount);
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (committed) {
+                    // Add transaction for sender
+                    addTransaction(-amount, "transfer_out", "Transfer to " + recipientAccountNumber + " (" + currency + ")");
+
+                    // Add transaction for recipient
+                    String recipientTransactionId = mDatabase.child("users").child(recipientUserId).child("transactions").push().getKey();
+                    UserTransaction recipientTransaction = new UserTransaction("transfer_in", amount, System.currentTimeMillis(), "Transfer from " + accountNumber + " (" + currency + ")");
+                    mDatabase.child("users").child(recipientUserId).child("transactions").child(recipientTransactionId).setValue(recipientTransaction);
+
+                    currentBalance -= amount;
+                    updateBalanceDisplay();
+                    Toast.makeText(HomeDashboardActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(HomeDashboardActivity.this, "Transfer failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void updateBalanceDisplay() {
+        tvBalance.setText(String.format("₱ %.2f", currentBalance));
     }
 
     private void addTransaction(double amount, String type, String description) {
