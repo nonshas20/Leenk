@@ -31,8 +31,8 @@ public class LoginPasscodeActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String userId;
 
-    private Button btnFaceLogin;
-    private Button btnFingerprintLogin;
+    private ImageButton btnFaceLogin;
+    private ImageButton btnFingerprintLogin;
     private Executor executor;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;

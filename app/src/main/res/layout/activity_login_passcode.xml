@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -122,29 +123,6 @@
                 android:background="@drawable/passcode_input_background"/>
 
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp">
-
-            <Button
-                android:id="@+id/btnFaceLogin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Face Login"
-                android:layout_marginEnd="8dp"/>
-
-            <Button
-                android:id="@+id/btnFingerprintLogin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Fingerprint Login"
-                android:layout_marginStart="8dp"/>
-
-        </LinearLayout>
 
         <GridLayout
             android:layout_width="wrap_content"
@@ -157,6 +135,7 @@
                 android:id="@+id/btn1"
                 style="@style/NumberPadButton"
                 android:text="1"
+                android:tint="@color/white"
                 android:textColor="@color/white"/>
 
             <Button
@@ -227,15 +206,48 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnForgotPasscode"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Forgot your passcode?"
-        android:textColor="@color/colorAccent"
-        android:background="?attr/selectableItemBackground"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp">
+
+        <ImageButton
+            android:id="@+id/btnFaceLogin"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/facerecognition"
+            android:background="?attr/selectableItemBackground"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            android:contentDescription="Face Login"
+            app:tint="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/btnForgotPasscode"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Forgot your passcode?"
+            android:textColor="@color/colorAccent"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <ImageButton
+            android:id="@+id/btnFingerprintLogin"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/fingerprint"
+            android:background="?attr/selectableItemBackground"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            android:contentDescription="Fingerprint Login"
+            app:tint="@color/colorAccent" />
+
+    </LinearLayout>
 
 </LinearLayout>
