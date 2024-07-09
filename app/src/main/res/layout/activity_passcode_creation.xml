@@ -118,6 +118,7 @@
             <Button
                 android:id="@+id/btn1"
                 style="@style/NumberPadButton"
+
                 android:text="1" />
 
             <Button

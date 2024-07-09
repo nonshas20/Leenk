@@ -50,6 +50,9 @@
         <activity android:name=".PayBillsActivity" />
         <activity android:name=".QRCodeDisplayActivity" />
         <activity android:name=".AddAmountActivity" />
+        <activity android:name=".BankTransferActivity" />
+        <activity android:name=".BankTransferDetailsActivity" />
+
 
 
 

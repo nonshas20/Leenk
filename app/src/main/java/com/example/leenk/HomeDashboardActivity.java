@@ -92,7 +92,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
         btnDeposit.setOnClickListener(v -> showDepositDialog());
         btnScanQR.setOnClickListener(v -> Toast.makeText(this, "Scan QR clicked", Toast.LENGTH_SHORT).show());
         btnSend.setOnClickListener(v -> navigateToWithdraw());
-        btnTransfer.setOnClickListener(v -> showLeenkToLeenkDialog());
+        btnTransfer.setOnClickListener(v -> navigateToBankTransfer());
         btnMyAccount.setOnClickListener(v -> navigateToMyAccount());
         btnHelpCenter.setOnClickListener(v -> Toast.makeText(this, "Help Center clicked", Toast.LENGTH_SHORT).show());
         btnToggleCardDetails.setOnClickListener(v -> toggleCardDetailsVisibility());
@@ -283,37 +283,11 @@ public class HomeDashboardActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void showLeenkToLeenkDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = getLayoutInflater().inflate(R.layout.dialog_leenk_to_leenk, null);
-        builder.setView(view);
-
-        EditText etAmount = view.findViewById(R.id.etAmount);
-        EditText etAccountNumber = view.findViewById(R.id.etAccountNumber);
-        Spinner spinnerCurrency = view.findViewById(R.id.spinnerCurrency);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.currencies, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCurrency.setAdapter(adapter);
-
-        builder.setPositiveButton("Send", (dialog, which) -> {
-            String amount = etAmount.getText().toString();
-            String accountNumber = etAccountNumber.getText().toString();
-            String currency = spinnerCurrency.getSelectedItem().toString();
-
-            if (!amount.isEmpty() && !accountNumber.isEmpty()) {
-                double sendAmount = Double.parseDouble(amount);
-                processLeenkToLeenkTransfer(sendAmount, accountNumber, currency);
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    private void navigateToBankTransfer() {
+        Intent intent = new Intent(this, BankTransferActivity.class);
+        intent.putExtra("USER_ID", userId);
+        intent.putExtra("CURRENT_BALANCE", currentBalance);
+        startActivity(intent);
     }
 
     private void processLeenkToLeenkTransfer(double amount, String recipientAccountNumber, String currency) {
