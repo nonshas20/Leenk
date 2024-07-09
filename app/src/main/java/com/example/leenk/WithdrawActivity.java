@@ -99,7 +99,56 @@ public class WithdrawActivity extends AppCompatActivity {
             return;
         }
 
-        updateBalance(-amount, accountNumber);
+        // Check if it's a transfer to another user
+        if (isTransferToAnotherUser(accountNumber)) {
+            transferToUser(amount, accountNumber);
+        } else {
+            updateBalance(-amount, accountNumber);
+        }
+    }
+    private boolean isTransferToAnotherUser(String accountNumber) {
+        // This is a simplification. In a real app, you'd want to validate the account number format
+        return accountNumber.length() == 16;
+    }
+    private void transferToUser(double amount, String recipientAccountNumber) {
+        mDatabase.child("users").orderByChild("accountNumber").equalTo(recipientAccountNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                String recipientUserId = userSnapshot.getKey();
+                                double recipientBalance = userSnapshot.child("balance").getValue(Double.class);
+
+                                // Update sender's balance
+                                mDatabase.child("users").child(userId).child("balance").setValue(currentBalance - amount)
+                                        .addOnSuccessListener(aVoid -> {
+                                            // Update recipient's balance
+                                            mDatabase.child("users").child(recipientUserId).child("balance").setValue(recipientBalance + amount)
+                                                    .addOnSuccessListener(aVoid1 -> {
+                                                        addTransaction(-amount, "Transfer to " + recipientAccountNumber);
+                                                        currentBalance -= amount;
+                                                        updateBalanceDisplay();
+                                                        Toast.makeText(WithdrawActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
+                                                        etWithdrawAmount.setText("");
+                                                        etAccountNumber.setText("");
+                                                    })
+                                                    .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update recipient's balance", Toast.LENGTH_SHORT).show());
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update sender's balance", Toast.LENGTH_SHORT).show());
+
+                                return; // Exit the loop after finding the first match
+                            }
+                        } else {
+                            Toast.makeText(WithdrawActivity.this, "Recipient account not found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(WithdrawActivity.this, "Failed to process transfer", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void updateBalance(double amount, String accountNumber) {
