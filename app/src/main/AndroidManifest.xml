@@ -59,6 +59,7 @@
         <activity android:name=".ScanIdActivity" />
         <activity android:name=".FaceRegistrationActivity" />
         <activity android:name=".FaceLoginActivity" />
+        <activity android:name=".CheckEmailActivity" />
 
 
 
