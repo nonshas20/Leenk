@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color">
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/logotransaparenttext"
+            android:scaleType="fitStart"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="2dp"/>
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:contentDescription="Close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/ivLock"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/lock"
-            android:layout_marginTop="48dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:src="@drawable/ic_lock"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
             android:contentDescription="Lock Icon" />
 
         <TextView
@@ -26,26 +54,15 @@
             android:layout_height="wrap_content"
             android:text="Create a new passcode"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text_color"
-            android:layout_marginTop="24dp"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="You'll use this to login to your account"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"
-            android:gravity="center" />
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="32dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="30dp"
             android:gravity="center">
 
             <EditText
@@ -113,69 +130,78 @@
             android:layout_height="wrap_content"
             android:columnCount="3"
             android:rowCount="4"
-            android:layout_marginTop="32dp">
+            android:useDefaultMargins="true">
 
             <Button
                 android:id="@+id/btn1"
                 style="@style/NumberPadButton"
-
-                android:text="1" />
+                android:text="1"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn2"
                 style="@style/NumberPadButton"
-                android:text="2" />
+                android:text="2"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn3"
                 style="@style/NumberPadButton"
-                android:text="3" />
+                android:text="3"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn4"
                 style="@style/NumberPadButton"
-                android:text="4" />
+                android:text="4"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn5"
                 style="@style/NumberPadButton"
-                android:text="5" />
+                android:text="5"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn6"
                 style="@style/NumberPadButton"
-                android:text="6" />
+                android:text="6"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn7"
                 style="@style/NumberPadButton"
-                android:text="7" />
+                android:text="7"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn8"
                 style="@style/NumberPadButton"
-                android:text="8" />
+                android:text="8"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/btn9"
                 style="@style/NumberPadButton"
-                android:text="9" />
+                android:text="9"
+                android:textColor="@color/white"/>
 
-            <View
+            <Space
                 android:layout_width="0dp"
                 android:layout_height="0dp" />
 
             <Button
                 android:id="@+id/btn0"
                 style="@style/NumberPadButton"
-                android:text="0" />
+                android:text="0"
+                android:textColor="@color/white"/>
 
             <ImageButton
                 android:id="@+id/btnBackspace"
                 style="@style/NumberPadButton"
-                android:src="@drawable/backarrow"
+                android:src="@drawable/ic_backspace"
                 android:contentDescription="Backspace" />
         </GridLayout>
 
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

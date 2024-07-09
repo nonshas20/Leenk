@@ -45,4 +45,9 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation ("com.google.mlkit:text-recognition:16.0.0")
+    implementation ("com.google.firebase:firebase-database:20.1.0")
+    implementation ("androidx.camera:camera-camera2:1.1.0")
+    implementation ("androidx.camera:camera-lifecycle:1.1.0")
+    implementation ("androidx.camera:camera-view:1.1.0")
 }

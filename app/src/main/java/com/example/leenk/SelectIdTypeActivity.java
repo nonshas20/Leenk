@@ -40,11 +40,14 @@ public class SelectIdTypeActivity extends AppCompatActivity {
         ivIdIcon.setImageResource(iconResId);
         tvIdName.setText(idName);
 
-        itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(SelectIdTypeActivity.this, BasicInfoActivity.class);
-            intent.putExtra("USER_ID", userId);
-            intent.putExtra("SELECTED_ID_TYPE", idName);
-            startActivity(intent);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SelectIdTypeActivity.this, ScanIdActivity.class);
+                intent.putExtra("USER_ID", userId);
+                intent.putExtra("SELECTED_ID_TYPE", idName);
+                startActivity(intent);
+            }
         });
     }
 }
