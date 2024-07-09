@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:layout_gravity="start" />
@@ -27,7 +27,7 @@
             android:layout_height="190dp"
             android:layout_marginTop="24dp"
             android:contentDescription="Leenk Logo"
-            android:src="@drawable/leenklogo" />
+            android:src="@drawable/leenklogo1" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -36,7 +36,7 @@
             android:text="Create username"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/primary_text_color"
+            android:textColor="@color/black"
             android:layout_marginTop="24dp"
             android:layout_gravity="start" />
 
@@ -77,7 +77,7 @@
             android:layout_marginTop="24dp"
             android:padding="16dp"
             app:cornerRadius="8dp"
-            android:backgroundTint="@color/button_color"
+            android:backgroundTint="@color/black"
             android:textColor="@color/button_text_color"
             android:textStyle="bold" />
 

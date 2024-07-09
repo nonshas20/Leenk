@@ -79,7 +79,7 @@
         <include layout="@layout/info_item" android:id="@+id/layoutFullName" />
         <include layout="@layout/info_item" android:id="@+id/layoutDateOfBirth" />
         <include layout="@layout/info_item" android:id="@+id/layoutCountryOfBirth" />
-        <include layout="@layout/info_item" android:id="@+id/layoutIdNumber" />
+
         <include layout="@layout/info_item" android:id="@+id/layoutUsername" />
         <include layout="@layout/info_item_with_button" android:id="@+id/layoutMobileNumber" />
         <include layout="@layout/info_item_with_button" android:id="@+id/layoutEmailAddress" />

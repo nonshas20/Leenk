@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/white"
     tools:context=".CitizenshipQuestionActivity">
 
     <LinearLayout
@@ -21,7 +21,7 @@
             android:layout_gravity="end"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/close_button_color"
+            android:tint="@color/black"
             android:contentDescription="Close" />
 
         <ImageView
@@ -30,7 +30,7 @@
             android:layout_height="190dp"
             android:layout_marginTop="24dp"
             android:contentDescription="Leenk Logo"
-            android:src="@drawable/leenklogo" />
+            android:src="@drawable/leenklogo1" />
 
         <TextView
             android:id="@+id/tvQuestion"
@@ -39,7 +39,7 @@
             android:text="Are you a Filipino Citizen?"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/primary_text_color"
+            android:textColor="@color/black"
             android:layout_marginTop="32dp"
             android:layout_gravity="start" />
 
@@ -60,7 +60,7 @@
                 android:textSize="18sp"
                 android:layout_marginEnd="8dp"
                 app:cornerRadius="8dp"
-                android:backgroundTint="@color/button_color"
+                android:backgroundTint="@color/black"
                 android:textColor="@color/button_text_color"
                 android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                 android:text="No"
                 android:textSize="18sp"
                 app:cornerRadius="8dp"
-                android:backgroundTint="#01f5fd"
+                android:backgroundTint="@color/white"
                 android:textColor="#d7094f"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -94,7 +94,7 @@
             android:layout_marginTop="24dp"
             android:padding="16dp"
             app:cornerRadius="8dp"
-            android:backgroundTint="@color/button_color"
+            android:backgroundTint="@color/black"
             android:textColor="@color/button_text_color"
             android:textStyle="bold" />
 

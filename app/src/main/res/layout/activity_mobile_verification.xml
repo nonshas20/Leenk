@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/white"
     tools:context=".MobileVerificationActivity">
 
     <ImageView
@@ -13,7 +13,7 @@
         android:layout_width="342dp"
         android:layout_height="292dp"
         android:layout_marginTop="32dp"
-        android:src="@drawable/leenklogo"
+        android:src="@drawable/leenklogo1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.3"
@@ -28,7 +28,7 @@
         android:layout_height="48dp"
         android:layout_margin="16dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_arrow_back"
+        android:src="@drawable/ic_arrow_back1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,7 +83,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="104dp"
-        android:backgroundTint="@color/button_color"
+        android:backgroundTint="@color/black"
         android:padding="12dp"
         android:text="Submit"
         android:textColor="@color/button_text_color"

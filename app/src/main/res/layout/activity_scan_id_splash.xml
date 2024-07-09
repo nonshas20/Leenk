@@ -5,16 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/white"
     tools:context=".ScanIdSplashActivity">
 
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="422dp"
         android:layout_height="183dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/leenklogo"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/logotransaparenttext"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +25,7 @@
         android:layout_height="48dp"
         android:layout_margin="16dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_arrow_back"
+        android:src="@drawable/ic_arrow_back1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,7 +74,8 @@
         android:layout_marginBottom="32dp"
         android:text="Scan ID"
         android:textSize="18sp"
-        android:background="@drawable/button_background"
+
+        android:backgroundTint="#2C2C2E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

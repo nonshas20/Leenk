@@ -6,57 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
-    android:background="@color/background_color"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="628dp"
-        android:layout_height="711dp"
-        android:src="@drawable/leenklogo"
+        android:layout_width="409dp"
+        android:layout_height="716dp"
+        android:src="@drawable/leenklogo1"
         app:layout_constraintBottom_toTopOf="@+id/btnLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.6" />
 
-    <Button
-        android:id="@+id/btnLogin"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
-        android:text="Login"
-        android:textSize="18sp"
-        android:textColor="#044459"
-        android:backgroundTint="#01f5fd"
-        android:elevation="4dp"
-        android:padding="12dp"
-        app:cornerRadius="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnRegister"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/cvRegister"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/btnRegister"
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOGIN"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:backgroundTint="#FFFFFF"
+            android:padding="16dp"
+            android:letterSpacing="0.1"
+            style="?android:attr/borderlessButtonStyle" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvRegister"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:text="Register"
-        android:textSize="18sp"
-        android:elevation="4dp"
-        android:padding="12dp"
-        app:cornerRadius="8dp"
-        android:backgroundTint="@color/button_color"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGISTER"
+            android:textSize="16sp"
+            android:textColor="#FF000000"
+            android:backgroundTint="#FF000000"
+            android:padding="16dp"
+            android:letterSpacing="0.1"
+            style="?android:attr/borderlessButtonStyle" />
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

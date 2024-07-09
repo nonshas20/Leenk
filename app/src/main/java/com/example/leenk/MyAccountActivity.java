@@ -32,8 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MyAccountActivity extends AppCompatActivity {
 
-    private TextView tvAccountNumber, tvFullName, tvDateOfBirth, tvCountryOfBirth,
-            tvIdNumber, tvUsername, tvMobileNumber, tvEmailAddress, tvHomeAddress;
+    private TextView tvAccountNumber, tvFullName, tvDateOfBirth, tvCountryOfBirth, tvUsername, tvMobileNumber, tvEmailAddress, tvHomeAddress;
     private ImageButton btnBack, btnCopy;
     private TabLayout tabLayout;
     private FirebaseAuth mAuth;
@@ -75,7 +74,7 @@ public class MyAccountActivity extends AppCompatActivity {
         tvFullName = findViewById(R.id.layoutFullName).findViewById(R.id.tvValue);
         tvDateOfBirth = findViewById(R.id.layoutDateOfBirth).findViewById(R.id.tvValue);
         tvCountryOfBirth = findViewById(R.id.layoutCountryOfBirth).findViewById(R.id.tvValue);
-        tvIdNumber = findViewById(R.id.layoutIdNumber).findViewById(R.id.tvValue);
+
         tvUsername = findViewById(R.id.layoutUsername).findViewById(R.id.tvValue);
         tvMobileNumber = findViewById(R.id.layoutMobileNumber).findViewById(R.id.tvValue);
         tvEmailAddress = findViewById(R.id.layoutEmailAddress).findViewById(R.id.tvValue);
@@ -131,8 +130,7 @@ public class MyAccountActivity extends AppCompatActivity {
                     String country = homeAddressSnapshot.child("country").getValue(String.class);
                     setInfoItemValue(findViewById(R.id.layoutCountryOfBirth), "Country of birth", country);
 
-                    // ID number is not present in your structure, so we'll set it to N/A
-                    setInfoItemValue(findViewById(R.id.layoutIdNumber), "ID number", "N/A");
+
 
                     String username = dataSnapshot.child("username").getValue(String.class);
                     setInfoItemValue(findViewById(R.id.layoutUsername), "Username", username);
