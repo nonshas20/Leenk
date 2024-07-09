@@ -5,11 +5,16 @@
 
     </style>
 
-    <style name="NumberPadButton" parent="Widget.MaterialComponents.Button">
+    <style name="NumberPadButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_width">80dp</item>
         <item name="android:layout_height">80dp</item>
         <item name="android:textSize">24sp</item>
-        <item name="cornerRadius">40dp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="cornerRadius">30dp</item>
+        <item name="strokeColor">@android:color/darker_gray</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="android:elevation">8dp</item>
     </style>
 
     <style name="NumberPadButtonWhite" parent="Widget.MaterialComponents.Button.OutlinedButton">
