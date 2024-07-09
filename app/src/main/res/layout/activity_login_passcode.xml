@@ -139,46 +139,55 @@
             <Button
                 android:id="@+id/btn1"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="1" />
 
             <Button
                 android:id="@+id/btn2"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="2" />
 
             <Button
                 android:id="@+id/btn3"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="3" />
 
             <Button
                 android:id="@+id/btn4"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="4" />
 
             <Button
                 android:id="@+id/btn5"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="5" />
 
             <Button
                 android:id="@+id/btn6"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="6" />
 
             <Button
                 android:id="@+id/btn7"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="7" />
 
             <Button
                 android:id="@+id/btn8"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="8" />
 
             <Button
                 android:id="@+id/btn9"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="9" />
 
             <Space
@@ -188,6 +197,7 @@
             <Button
                 android:id="@+id/btn0"
                 style="@style/NumberPadButtonWhite"
+                app:backgroundTint="@android:color/white"
                 android:text="0" />
 
             <ImageButton
@@ -210,8 +220,8 @@
 
         <ImageButton
             android:id="@+id/btnFaceLogin"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:src="@drawable/facerecognition"
             android:background="?attr/selectableItemBackground"
             android:adjustViewBounds="true"
@@ -233,8 +243,8 @@
 
         <ImageButton
             android:id="@+id/btnFingerprintLogin"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:src="@drawable/fingerprint"
             android:background="?attr/selectableItemBackground"
             android:adjustViewBounds="true"
