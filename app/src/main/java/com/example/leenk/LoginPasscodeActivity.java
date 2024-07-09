@@ -1,30 +1,41 @@
 package com.example.leenk;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Executor;
 
 public class LoginPasscodeActivity extends AppCompatActivity {
-
     private EditText[] passcodeInputs;
     private Button[] numberButtons;
     private ImageButton btnBackspace;
     private DatabaseReference mDatabase;
     private String userId;
+
+    private Button btnFaceLogin;
+    private Button btnFingerprintLogin;
+    private Executor executor;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +47,7 @@ public class LoginPasscodeActivity extends AppCompatActivity {
 
         initializeViews();
         setupNumberPad();
+        setupBiometricOptions();
     }
 
     private void initializeViews() {
@@ -62,6 +74,55 @@ public class LoginPasscodeActivity extends AppCompatActivity {
         };
 
         btnBackspace = findViewById(R.id.btnBackspace);
+        btnFaceLogin = findViewById(R.id.btnFaceLogin);
+        btnFingerprintLogin = findViewById(R.id.btnFingerprintLogin);
+    }
+    private void setupBiometricOptions() {
+        btnFaceLogin.setOnClickListener(v -> startFaceLogin());
+        btnFingerprintLogin.setOnClickListener(v -> startFingerprintLogin());
+
+        executor = ContextCompat.getMainExecutor(this);
+        biometricPrompt = new BiometricPrompt(LoginPasscodeActivity.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                                "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                proceedToHomeDashboard();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Login with Fingerprint")
+                .setSubtitle("Place your finger on the sensor")
+                .setNegativeButtonText("Cancel")
+                .build();
+    }
+
+    private void startFaceLogin() {
+        // Start the face recognition activity
+        Intent intent = new Intent(LoginPasscodeActivity.this, FaceLoginActivity.class);
+        intent.putExtra("USER_ID", userId);
+        startActivity(intent);
+    }
+
+    private void startFingerprintLogin() {
+        biometricPrompt.authenticate(promptInfo);
     }
 
     private void setupNumberPad() {

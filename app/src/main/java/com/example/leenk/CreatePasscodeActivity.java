@@ -1,17 +1,24 @@
 package com.example.leenk;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class CreatePasscodeActivity extends AppCompatActivity {
 
@@ -22,6 +29,10 @@ public class CreatePasscodeActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
 
     private String userId;
+
+    private Executor executor;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +52,7 @@ public class CreatePasscodeActivity extends AppCompatActivity {
 
         initializeViews();
         setupNumberPad();
+        initializeBiometricPrompt();
     }
     private void initializeViews() {
         passcodeInputs = new EditText[]{
@@ -124,13 +136,72 @@ public class CreatePasscodeActivity extends AppCompatActivity {
     }
 
     private void completeRegistration() {
-        // Set a flag in SharedPreferences to indicate that registration is complete
         getSharedPreferences("MyPrefs", MODE_PRIVATE)
                 .edit()
                 .putBoolean("isRegistrationComplete", true)
                 .apply();
 
-        // Navigate back to MainActivity
+        // Start fingerprint registration
+        startFingerprintRegistration();
+    }
+
+    private void initializeBiometricPrompt() {
+        executor = ContextCompat.getMainExecutor(this);
+        biometricPrompt = new BiometricPrompt(CreatePasscodeActivity.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                                "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                saveFingerprintData();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Register Fingerprint")
+                .setSubtitle("Place your finger on the sensor")
+                .setNegativeButtonText("Cancel")
+                .build();
+    }
+
+    private void startFingerprintRegistration() {
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void saveFingerprintData() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("fingerprintEnabled", true);
+
+        userRef.updateChildren(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreatePasscodeActivity.this, "Fingerprint registered successfully", Toast.LENGTH_SHORT).show();
+                    navigateToMainActivity();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(CreatePasscodeActivity.this, "Failed to register fingerprint: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void navigateToMainActivity() {
         Intent intent = new Intent(CreatePasscodeActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

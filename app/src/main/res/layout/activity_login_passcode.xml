@@ -122,6 +122,29 @@
                 android:background="@drawable/passcode_input_background"/>
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btnFaceLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Face Login"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnFingerprintLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Fingerprint Login"
+                android:layout_marginStart="8dp"/>
+
+        </LinearLayout>
 
         <GridLayout
             android:layout_width="wrap_content"

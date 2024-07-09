@@ -63,7 +63,7 @@ public class CreateUsernameActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Toast.makeText(CreateUsernameActivity.this, "Username saved successfully", Toast.LENGTH_SHORT).show();
                         // Navigate to the passcode creation activity
-                        Intent intent = new Intent(CreateUsernameActivity.this, CreatePasscodeActivity.class);
+                        Intent intent = new Intent(CreateUsernameActivity.this, FaceRegistrationActivity.class);
                         intent.putExtra("USER_ID", userId);  // Pass the userId
                         startActivity(intent);
                         finish();
