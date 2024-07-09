@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/inter_semibold"
-                android:text="Send &amp; Transfer"
+                android:text="Transfer"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -83,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/black"
             android:hint="Enter account number"
             android:inputType="number"
             android:textColor="@color/black"

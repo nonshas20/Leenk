@@ -13,6 +13,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -147,11 +153,25 @@ public class CitizenshipQuestionActivity extends AppCompatActivity {
         });
     }
 
+
+
+
     private void selectOption(String option) {
         selectedOption = option;
-        btnYes.setBackgroundResource(option.equals("Yes") ? R.drawable.button_selected : R.drawable.button_background);
-        btnNo.setBackgroundResource(option.equals("No") ? R.drawable.button_selected : R.drawable.button_background);
+
+        int colorSelected = getResources().getColor(R.color.button_background       );
+        int colorDefault = getResources().getColor(R.color.button_selected);
+
+        if (option.equals("Yes")) {
+            btnYes.setBackgroundColor(colorSelected);
+            btnNo.setBackgroundColor(colorDefault);
+        } else {
+            btnYes.setBackgroundColor(colorDefault);
+            btnNo.setBackgroundColor(colorSelected);
+        }
     }
+
+
 
     private void saveToDatabase() {
         if (userId != null) {

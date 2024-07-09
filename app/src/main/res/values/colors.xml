@@ -15,6 +15,8 @@
     <color name="dark_gray">#666666</color>
     <color name="green">#4CAF50</color>
     <color name="red">#F44336</color>
+    <color name="button_selected">#FFFFFFFF</color>
+    <color name="button_background">#1C1C1E</color>
     <color name="gray">#8E8E93</color>
     <color name="cyan">#5AC8FA</color>
     <color name="dark_backgroundd">#1E1E1E</color>

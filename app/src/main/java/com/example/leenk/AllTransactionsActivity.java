@@ -3,8 +3,10 @@ package com.example.leenk;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +27,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
     private RecyclerView rvAllTransactions;
     private TransactionAdapter adapter;
     private List<UserTransaction> transactions;
-    private Button btnSortDate, btnSortTransaction, btnSortAmount;
+    private Button btnSortDate, btnSortAmount;
     private EditText etSearch;
     private DatabaseReference mDatabase;
     private TextView tvBalance, tvAccountNumber;
@@ -41,7 +43,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
         // Initialize views
         rvAllTransactions = findViewById(R.id.rvAllTransactions);
         btnSortDate = findViewById(R.id.btnSortDate);
-        btnSortTransaction = findViewById(R.id.btnSortTransaction);
+
         btnSortAmount = findViewById(R.id.btnSortAmount);
         etSearch = findViewById(R.id.etSearch);
         tvBalance = findViewById(R.id.tvBalance);
@@ -62,11 +64,8 @@ public class AllTransactionsActivity extends AppCompatActivity {
         // Load transactions from Firebase
         loadTransactions();
 
-        // Set up sorting buttons
-        btnSortDate.setOnClickListener(v -> sortByDate());
-        btnSortTransaction.setOnClickListener(v -> sortByTransactionType());
-        btnSortAmount.setOnClickListener(v -> sortByAmount());
-
+        // Set up sorting buttons with dropdown menus
+        setupSortingButtons();
 
         // Set up search functionality
         etSearch.addTextChangedListener(new TextWatcher() {
@@ -81,6 +80,44 @@ public class AllTransactionsActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+    }
+
+    private void setupSortingButtons() {
+        btnSortDate.setOnClickListener(v -> showDateSortingMenu());
+
+        btnSortAmount.setOnClickListener(v -> showAmountSortingMenu());
+    }
+
+    private void showDateSortingMenu() {
+        PopupMenu popup = new PopupMenu(this, btnSortDate);
+        popup.getMenuInflater().inflate(R.menu.menu_sort_date, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.sort_recent) {
+                sortByDate(true);
+            } else if (itemId == R.id.sort_oldest) {
+                sortByDate(false);
+            }
+            return true;
+        });
+        popup.show();
+    }
+
+
+
+    private void showAmountSortingMenu() {
+        PopupMenu popup = new PopupMenu(this, btnSortAmount);
+        popup.getMenuInflater().inflate(R.menu.menu_sort_amount, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.sort_highest) {
+                sortByAmount(true);
+            } else if (itemId == R.id.sort_lowest) {
+                sortByAmount(false);
+            }
+            return true;
+        });
+        popup.show();
     }
 
     private void loadTransactions() {
@@ -111,18 +148,27 @@ public class AllTransactionsActivity extends AppCompatActivity {
                 });
     }
 
-    private void sortByDate() {
-        Collections.sort(transactions, (t1, t2) -> Long.compare(t2.getTimestamp(), t1.getTimestamp()));
+    private void sortByDate(boolean recent) {
+        Collections.sort(transactions, (t1, t2) ->
+                recent ? Long.compare(t2.getTimestamp(), t1.getTimestamp())
+                        : Long.compare(t1.getTimestamp(), t2.getTimestamp()));
         adapter.notifyDataSetChanged();
     }
 
-    private void sortByTransactionType() {
-        Collections.sort(transactions, (t1, t2) -> t1.getType().compareTo(t2.getType()));
-        adapter.notifyDataSetChanged();
+    private void filterByTransactionType(String type) {
+        List<UserTransaction> filteredList = new ArrayList<>();
+        for (UserTransaction transaction : transactions) {
+            if (transaction.getType().equalsIgnoreCase(type)) {
+                filteredList.add(transaction);
+            }
+        }
+        adapter.updateList(filteredList);
     }
 
-    private void sortByAmount() {
-        Collections.sort(transactions, (t1, t2) -> Double.compare(Math.abs(t2.getAmount()), Math.abs(t1.getAmount())));
+    private void sortByAmount(boolean highest) {
+        Collections.sort(transactions, (t1, t2) ->
+                highest ? Double.compare(Math.abs(t2.getAmount()), Math.abs(t1.getAmount()))
+                        : Double.compare(Math.abs(t1.getAmount()), Math.abs(t2.getAmount())));
         adapter.notifyDataSetChanged();
     }
 

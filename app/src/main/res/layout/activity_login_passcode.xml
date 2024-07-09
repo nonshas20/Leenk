@@ -20,7 +20,8 @@
             android:src="@drawable/logotransaparenttext"
             android:scaleType="fitStart"
             android:adjustViewBounds="true"
-            android:layout_marginBottom="2dp"/>
+            android:layout_marginBottom="2dp"
+            app:tint="@android:color/black" />
 
         <ImageButton
             android:id="@+id/btnClose"
@@ -29,7 +30,8 @@
             android:src="@drawable/ic_close"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:contentDescription="Close" />
+            android:contentDescription="Close"
+            app:tint="@android:color/black" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,7 +47,8 @@
             android:src="@drawable/ic_lock"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="20dp"
-            android:contentDescription="Lock Icon" />
+            android:contentDescription="Lock Icon"
+            app:tint="@android:color/black" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -122,6 +125,7 @@
                 android:textAlignment="center"
                 android:background="@drawable/passcode_input_background"/>
 
+
         </LinearLayout>
 
         <GridLayout
@@ -131,60 +135,51 @@
             android:rowCount="4"
             android:useDefaultMargins="true">
 
+            <!-- Number pad buttons -->
             <Button
                 android:id="@+id/btn1"
-                style="@style/NumberPadButton"
-                android:text="1"
-                android:tint="@color/white"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="1" />
 
             <Button
                 android:id="@+id/btn2"
-                style="@style/NumberPadButton"
-                android:text="2"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="2" />
 
             <Button
                 android:id="@+id/btn3"
-                style="@style/NumberPadButton"
-                android:text="3"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="3" />
 
             <Button
                 android:id="@+id/btn4"
-                style="@style/NumberPadButton"
-                android:text="4"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="4" />
 
             <Button
                 android:id="@+id/btn5"
-                style="@style/NumberPadButton"
-                android:text="5"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="5" />
 
             <Button
                 android:id="@+id/btn6"
-                style="@style/NumberPadButton"
-                android:text="6"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="6" />
 
             <Button
                 android:id="@+id/btn7"
-                style="@style/NumberPadButton"
-                android:text="7"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="7" />
 
             <Button
                 android:id="@+id/btn8"
-                style="@style/NumberPadButton"
-                android:text="8"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="8" />
 
             <Button
                 android:id="@+id/btn9"
-                style="@style/NumberPadButton"
-                android:text="9"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="9" />
 
             <Space
                 android:layout_width="0dp"
@@ -192,15 +187,15 @@
 
             <Button
                 android:id="@+id/btn0"
-                style="@style/NumberPadButton"
-                android:text="0"
-                android:textColor="@color/white"/>
+                style="@style/NumberPadButtonWhite"
+                android:text="0" />
 
             <ImageButton
                 android:id="@+id/btnBackspace"
-                style="@style/NumberPadButton"
+                style="@style/NumberPadButtonWhite"
                 android:src="@drawable/ic_backspace"
-                android:contentDescription="Backspace" />
+                android:contentDescription="Backspace"
+                app:tint="@android:color/black" />
 
         </GridLayout>
 
@@ -223,7 +218,7 @@
             android:scaleType="fitCenter"
             android:padding="8dp"
             android:contentDescription="Face Login"
-            app:tint="@color/colorAccent" />
+            app:tint="@android:color/black" />
 
         <Button
             android:id="@+id/btnForgotPasscode"
@@ -231,10 +226,10 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Forgot your passcode?"
-            android:textColor="@color/colorAccent"
+            android:textColor="@android:color/black"
             android:background="?attr/selectableItemBackground"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp" />
 
         <ImageButton
             android:id="@+id/btnFingerprintLogin"
@@ -246,7 +241,7 @@
             android:scaleType="fitCenter"
             android:padding="8dp"
             android:contentDescription="Fingerprint Login"
-            app:tint="@color/colorAccent" />
+            app:tint="@android:color/black" />
 
     </LinearLayout>
 
