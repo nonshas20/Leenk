@@ -67,6 +67,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
         btnSortTransaction.setOnClickListener(v -> sortByTransactionType());
         btnSortAmount.setOnClickListener(v -> sortByAmount());
 
+
         // Set up search functionality
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override

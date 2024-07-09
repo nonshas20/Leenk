@@ -1,8 +1,11 @@
 package com.example.leenk;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +18,9 @@ import java.util.Locale;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
     private List<UserTransaction> transactions;
+    private Context context;
 
+    // Updated constructor
     public TransactionAdapter(List<UserTransaction> transactions) {
         this.transactions = transactions;
     }
@@ -23,7 +28,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_transaction, parent, false);
         return new ViewHolder(view);
     }
 
@@ -31,6 +37,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserTransaction transaction = transactions.get(position);
         holder.bind(transaction);
+
+        holder.itemView.setOnClickListener(v -> showTransactionDetails(transaction));
     }
 
     @Override
@@ -43,11 +51,31 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         notifyDataSetChanged();
     }
 
+    private void showTransactionDetails(UserTransaction transaction) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Transaction Details");
+
+        String details = String.format(
+                "Type: %s\nAmount: ₱ %.2f\nDescription: %s\nDate: %s\nPayment Method: %s",
+                transaction.getType(),
+                transaction.getAmount(),
+                transaction.getDescription(),
+                formatDate(transaction.getTimestamp()),
+                transaction.getPaymentMethod()
+        );
+
+        builder.setMessage(details);
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivTransactionIcon;
         TextView tvType, tvAmount, tvDescription, tvTimestamp;
 
         ViewHolder(View itemView) {
             super(itemView);
+            ivTransactionIcon = itemView.findViewById(R.id.ivTransactionIcon);
             tvType = itemView.findViewById(R.id.tvType);
             tvAmount = itemView.findViewById(R.id.tvAmount);
             tvDescription = itemView.findViewById(R.id.tvDescription);
@@ -60,16 +88,40 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvDescription.setText(transaction.getDescription());
             tvTimestamp.setText(formatDate(transaction.getTimestamp()));
 
+            // Set icon based on transaction type
+            int iconResourceId;
+            switch (transaction.getType().toLowerCase()) {
+                case "transfer":
+                    iconResourceId = R.drawable.transfer1;
+                    break;
+                case "bills":
+                    iconResourceId = R.drawable.bills;
+                    break;
+                case "load":
+                    iconResourceId = R.drawable.load;
+                    break;
+                case "deposit":
+                    iconResourceId = R.drawable.deposit;
+                    break;
+                case "bank":
+                    iconResourceId = R.drawable.bank;
+                    break;
+                default:
+                    iconResourceId = R.drawable.bank; // You should create a default icon
+                    break;
+            }
+            ivTransactionIcon.setImageResource(iconResourceId);
+
             // Set color based on transaction type
             int color = transaction.getType().equalsIgnoreCase("deposit") ?
                     itemView.getContext().getColor(R.color.green) :
                     itemView.getContext().getColor(R.color.red);
             tvAmount.setTextColor(color);
         }
+    }
 
-        private String formatDate(long timestamp) {
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-            return sdf.format(new Date(timestamp));
-        }
+    private static String formatDate(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
+        return sdf.format(new Date(timestamp));
     }
 }
