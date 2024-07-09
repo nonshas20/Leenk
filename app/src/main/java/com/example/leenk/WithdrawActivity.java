@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +18,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,10 +69,25 @@ public class WithdrawActivity extends AppCompatActivity {
         rvWithdrawTransactions.setLayoutManager(new LinearLayoutManager(this));
     }
     private void handleQRResult(String qrResult) {
-        // Here you can parse the QR result and populate the withdrawal fields
-        // For example, if the QR code contains an account number:
-        etAccountNumber.setText(qrResult);
-        // You might also want to set a default amount or parse it from the QR code
+        try {
+            JSONObject qrData = new JSONObject(qrResult);
+            String accountNumber = qrData.optString("accountNumber", "");
+            double amount = qrData.optDouble("amount", 0.0);
+
+            if (!accountNumber.isEmpty()) {
+                etAccountNumber.setText(accountNumber);
+            }
+
+            if (amount > 0) {
+                etWithdrawAmount.setText(String.format("%.2f", amount));
+            }
+
+            // You might want to update UI or show a message
+            Toast.makeText(this, "QR code scanned successfully", Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Invalid QR code data", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupClickListeners() {
@@ -106,11 +125,50 @@ public class WithdrawActivity extends AppCompatActivity {
             updateBalance(-amount, accountNumber);
         }
     }
+    private void processTransfer(double amount, String recipientAccountNumber, String recipientUserId) {
+        mDatabase.child("users").child(recipientUserId).child("balance").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Double recipientBalance = task.getResult().getValue(Double.class);
+                if (recipientBalance != null) {
+                    // Update sender's balance
+                    mDatabase.child("users").child(userId).child("balance").setValue(currentBalance - amount)
+                            .addOnSuccessListener(aVoid -> {
+                                // Update recipient's balance
+                                mDatabase.child("users").child(recipientUserId).child("balance").setValue(recipientBalance + amount)
+                                        .addOnSuccessListener(aVoid1 -> {
+                                            addTransaction(-amount, "Transfer to " + recipientAccountNumber);
+                                            currentBalance -= amount;
+                                            updateBalanceDisplay();
+                                            Toast.makeText(WithdrawActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
+                                            etWithdrawAmount.setText("");
+                                            etAccountNumber.setText("");
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update recipient's balance", Toast.LENGTH_SHORT).show());
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update sender's balance", Toast.LENGTH_SHORT).show());
+                } else {
+                    Toast.makeText(WithdrawActivity.this, "Failed to retrieve recipient's balance", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(WithdrawActivity.this, "Failed to process transfer", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void showConfirmationDialog(double amount, String recipientAccountNumber) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Transfer");
+        builder.setMessage(String.format("Are you sure you want to transfer ₱%.2f to account %s?", amount, recipientAccountNumber));
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            verifyRecipientIdentity(amount, recipientAccountNumber);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
     private boolean isTransferToAnotherUser(String accountNumber) {
         // This is a simplification. In a real app, you'd want to validate the account number format
         return accountNumber.length() == 16;
     }
-    private void transferToUser(double amount, String recipientAccountNumber) {
+    private void verifyRecipientIdentity(double amount, String recipientAccountNumber) {
         mDatabase.child("users").orderByChild("accountNumber").equalTo(recipientAccountNumber)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -118,26 +176,15 @@ public class WithdrawActivity extends AppCompatActivity {
                         if (dataSnapshot.exists()) {
                             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                 String recipientUserId = userSnapshot.getKey();
-                                double recipientBalance = userSnapshot.child("balance").getValue(Double.class);
-
-                                // Update sender's balance
-                                mDatabase.child("users").child(userId).child("balance").setValue(currentBalance - amount)
-                                        .addOnSuccessListener(aVoid -> {
-                                            // Update recipient's balance
-                                            mDatabase.child("users").child(recipientUserId).child("balance").setValue(recipientBalance + amount)
-                                                    .addOnSuccessListener(aVoid1 -> {
-                                                        addTransaction(-amount, "Transfer to " + recipientAccountNumber);
-                                                        currentBalance -= amount;
-                                                        updateBalanceDisplay();
-                                                        Toast.makeText(WithdrawActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
-                                                        etWithdrawAmount.setText("");
-                                                        etAccountNumber.setText("");
-                                                    })
-                                                    .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update recipient's balance", Toast.LENGTH_SHORT).show());
-                                        })
-                                        .addOnFailureListener(e -> Toast.makeText(WithdrawActivity.this, "Failed to update sender's balance", Toast.LENGTH_SHORT).show());
-
-                                return; // Exit the loop after finding the first match
+                                String recipientFirstName = userSnapshot.child("basic_info").child("first_name").getValue(String.class);
+                                String recipientLastName = userSnapshot.child("basic_info").child("last_name").getValue(String.class);
+                                String recipientName = (recipientFirstName != null ? recipientFirstName : "") + " " + (recipientLastName != null ? recipientLastName : "");
+                                recipientName = recipientName.trim();
+                                if (recipientName.isEmpty()) {
+                                    recipientName = "Unknown User";
+                                }
+                                showRecipientVerificationDialog(amount, recipientAccountNumber, recipientUserId, recipientName);
+                                return;
                             }
                         } else {
                             Toast.makeText(WithdrawActivity.this, "Recipient account not found", Toast.LENGTH_SHORT).show();
@@ -146,11 +193,24 @@ public class WithdrawActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(WithdrawActivity.this, "Failed to process transfer", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WithdrawActivity.this, "Failed to verify recipient", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    private void showRecipientVerificationDialog(double amount, String recipientAccountNumber, String recipientUserId, String recipientName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Verify Recipient");
+        builder.setMessage(String.format("You are about to transfer ₱%.2f to:\n\nName: %s\nAccount: %s\n\nIs this correct?", amount, recipientName, recipientAccountNumber));
+        builder.setPositiveButton("Yes, Transfer", (dialog, which) -> {
+            processTransfer(amount, recipientAccountNumber, recipientUserId);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+    private void transferToUser(double amount, String recipientAccountNumber) {
+        showConfirmationDialog(amount, recipientAccountNumber);
+    }
     private void updateBalance(double amount, String accountNumber) {
         mDatabase.child("users").child(userId).child("balance").setValue(currentBalance + amount)
                 .addOnSuccessListener(aVoid -> {
