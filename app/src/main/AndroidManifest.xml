@@ -60,7 +60,7 @@
         <activity android:name=".FaceRegistrationActivity" />
         <activity android:name=".FaceLoginActivity" />
         <activity android:name=".CheckEmailActivity" />
-
+        <activity android:name=".BankStatementActivity" />
 
 
 

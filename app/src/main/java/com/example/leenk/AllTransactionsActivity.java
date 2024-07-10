@@ -1,5 +1,6 @@
 package com.example.leenk;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,15 +20,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class AllTransactionsActivity extends AppCompatActivity {
 
     private RecyclerView rvAllTransactions;
     private TransactionAdapter adapter;
     private List<UserTransaction> transactions;
-    private Button btnSortDate, btnSortAmount;
+    private Button btnSortDate, btnSortAmount, btnBankStatement;
     private EditText etSearch;
     private DatabaseReference mDatabase;
     private TextView tvBalance, tvAccountNumber;
@@ -43,8 +46,8 @@ public class AllTransactionsActivity extends AppCompatActivity {
         // Initialize views
         rvAllTransactions = findViewById(R.id.rvAllTransactions);
         btnSortDate = findViewById(R.id.btnSortDate);
-
         btnSortAmount = findViewById(R.id.btnSortAmount);
+        btnBankStatement = findViewById(R.id.btnBankStatement);
         etSearch = findViewById(R.id.etSearch);
         tvBalance = findViewById(R.id.tvBalance);
         tvAccountNumber = findViewById(R.id.tvAccountNumber);
@@ -67,6 +70,9 @@ public class AllTransactionsActivity extends AppCompatActivity {
         // Set up sorting buttons with dropdown menus
         setupSortingButtons();
 
+        // Set up bank statement button
+        setupBankStatementButton();
+
         // Set up search functionality
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,11 +88,13 @@ public class AllTransactionsActivity extends AppCompatActivity {
         });
     }
 
+
     private void setupSortingButtons() {
         btnSortDate.setOnClickListener(v -> showDateSortingMenu());
 
         btnSortAmount.setOnClickListener(v -> showAmountSortingMenu());
     }
+
 
     private void showDateSortingMenu() {
         PopupMenu popup = new PopupMenu(this, btnSortDate);
@@ -155,15 +163,42 @@ public class AllTransactionsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void filterByTransactionType(String type) {
+    private void setupBankStatementButton() {
+        btnBankStatement.setOnClickListener(v -> {
+            Intent intent = new Intent(AllTransactionsActivity.this, BankStatementActivity.class);
+            intent.putExtra("USER_ID", getIntent().getStringExtra("USER_ID"));
+            startActivity(intent);
+        });
+    }
+
+    private void showBankStatementMenu() {
+        PopupMenu popup = new PopupMenu(this, btnBankStatement);
+        Calendar calendar = Calendar.getInstance();
+        for (int i = 0; i < 12; i++) {
+            String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+            popup.getMenu().add(monthName);
+            calendar.add(Calendar.MONTH, -1);
+        }
+        popup.setOnMenuItemClickListener(item -> {
+            filterTransactionsByMonth(item.getTitle().toString());
+            return true;
+        });
+        popup.show();
+    }
+
+    private void filterTransactionsByMonth(String month) {
         List<UserTransaction> filteredList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
         for (UserTransaction transaction : transactions) {
-            if (transaction.getType().equalsIgnoreCase(type)) {
+            calendar.setTimeInMillis(transaction.getTimestamp());
+            String transactionMonth = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+            if (transactionMonth.equals(month)) {
                 filteredList.add(transaction);
             }
         }
         adapter.updateList(filteredList);
     }
+
 
     private void sortByAmount(boolean highest) {
         Collections.sort(transactions, (t1, t2) ->

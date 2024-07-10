@@ -100,12 +100,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-
                 android:drawableStart="@drawable/ic_calendar"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_marginStart="16dp"/>
-
-
 
             <Button
                 android:id="@+id/btnSortAmount"
@@ -115,6 +112,16 @@
                 android:drawableStart="@drawable/ic_amount"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_marginStart="8dp"/>
+
+            <Button
+                android:id="@+id/btnBankStatement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bank Statement"
+                android:drawableStart="@drawable/bank"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@android:color/black"
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
 
