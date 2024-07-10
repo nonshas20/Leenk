@@ -79,6 +79,12 @@ public class BasicInfoActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if the user is at least 18 years old
+        if (!isUserAtLeast18(dateOfBirth)) {
+            Toast.makeText(this, "You must be at least 18 years old to register", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         DatabaseReference userRef = mDatabase.child(userId).child("basic_info");
 
         userRef.child("first_name").setValue(firstName);
@@ -93,5 +99,25 @@ public class BasicInfoActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(BasicInfoActivity.this, "Failed to save information", Toast.LENGTH_SHORT).show());
+    }
+
+    private boolean isUserAtLeast18(String dateOfBirth) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+            Calendar birthDate = Calendar.getInstance();
+            birthDate.setTime(sdf.parse(dateOfBirth));
+
+            Calendar currentDate = Calendar.getInstance();
+            int age = currentDate.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR);
+
+            if (currentDate.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {
+                age--;
+            }
+
+            return age >= 18;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

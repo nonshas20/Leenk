@@ -36,6 +36,7 @@ public class WithdrawActivity extends AppCompatActivity {
     private String userId;
     private double currentBalance;
     private DatabaseReference mDatabase;
+    private static final double MAINTAINING_BALANCE = 500.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +114,13 @@ public class WithdrawActivity extends AppCompatActivity {
             return;
         }
 
-        if (amount > currentBalance) {
-            Toast.makeText(this, "Insufficient balance", Toast.LENGTH_SHORT).show();
+        if (currentBalance - amount < MAINTAINING_BALANCE) {
+            Toast.makeText(this, "Withdrawal not allowed. Account balance must maintain at least ₱" + MAINTAINING_BALANCE, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (amount > currentBalance - MAINTAINING_BALANCE) {
+            Toast.makeText(this, "Insufficient balance. You can withdraw up to ₱" + (currentBalance - MAINTAINING_BALANCE), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -126,6 +132,10 @@ public class WithdrawActivity extends AppCompatActivity {
         }
     }
     private void processTransfer(double amount, String recipientAccountNumber, String recipientUserId) {
+        if (currentBalance - amount < MAINTAINING_BALANCE) {
+            Toast.makeText(WithdrawActivity.this, "Transfer not allowed. Account balance must maintain at least ₱" + MAINTAINING_BALANCE, Toast.LENGTH_LONG).show();
+            return;
+        }
         mDatabase.child("users").child(recipientUserId).child("balance").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Double recipientBalance = task.getResult().getValue(Double.class);

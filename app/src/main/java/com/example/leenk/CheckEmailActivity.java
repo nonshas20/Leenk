@@ -61,7 +61,7 @@ public class CheckEmailActivity extends AppCompatActivity {
                                         Toast.makeText(CheckEmailActivity.this, "Email verified successfully!", Toast.LENGTH_SHORT).show();
                                         // TODO: Update user's password here
                                         // TODO: Replace NextActivity.class with your next activity
-                                        Intent intent = new Intent(CheckEmailActivity.this, BasicInfoActivity.class);
+                                        Intent intent = new Intent(CheckEmailActivity.this, ScanIdSplashActivity.class);
                                         intent.putExtra("USER_ID", userId);
                                         startActivity(intent);
                                         finish();

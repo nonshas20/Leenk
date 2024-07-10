@@ -56,18 +56,20 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         builder.setTitle("Transaction Details");
 
         String details = String.format(
-                "Type: %s\nAmount: ₱ %.2f\nDescription: %s\nDate: %s\nPayment Method: %s",
+                "Type: %s\nAmount: ₱ %.2f\nDescription: %s\nDate: %s\nPayment Method: %s\nReference ID: %s",
                 transaction.getType(),
                 transaction.getAmount(),
                 transaction.getDescription(),
                 formatDate(transaction.getTimestamp()),
-                transaction.getPaymentMethod()
+                transaction.getPaymentMethod(),
+                transaction.getReferenceId()
         );
 
         builder.setMessage(details);
         builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
+
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivTransactionIcon;
@@ -120,8 +122,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         }
     }
 
+
+
     private static String formatDate(long timestamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
         return sdf.format(new Date(timestamp));
     }
 }

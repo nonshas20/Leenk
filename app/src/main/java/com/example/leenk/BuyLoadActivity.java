@@ -35,6 +35,8 @@ public class BuyLoadActivity extends AppCompatActivity {
     private String userId;
     private double userBalance = 0.0;
 
+    private static final double MAINTAINING_BALANCE = 500.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,10 +81,12 @@ public class BuyLoadActivity extends AppCompatActivity {
 
         etAmount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -96,6 +100,7 @@ public class BuyLoadActivity extends AppCompatActivity {
         findViewById(R.id.card500).setOnClickListener(v -> setAmount(500));
         findViewById(R.id.card1000).setOnClickListener(v -> setAmount(1000));
     }
+
     private void setAmount(int amount) {
         etAmount.setText(String.valueOf(amount));
     }
@@ -126,13 +131,17 @@ public class BuyLoadActivity extends AppCompatActivity {
                 double amount = Double.parseDouble(amountStr);
                 double balanceAfter = userBalance - amount;
                 tvBalanceAfter.setText(String.format("₱ %.2f", balanceAfter));
+                btnBuyLoad.setEnabled(balanceAfter >= MAINTAINING_BALANCE);
             } catch (NumberFormatException e) {
                 tvBalanceAfter.setText(String.format("₱ %.2f", userBalance));
+                btnBuyLoad.setEnabled(false);
             }
         } else {
             tvBalanceAfter.setText(String.format("₱ %.2f", userBalance));
+            btnBuyLoad.setEnabled(false);
         }
     }
+
 
     private void resetNetworkSelection() {
         cardGlobe.setSelected(false);
@@ -168,8 +177,8 @@ public class BuyLoadActivity extends AppCompatActivity {
             return;
         }
 
-        if (amount > userBalance) {
-            Toast.makeText(this, "Insufficient balance", Toast.LENGTH_SHORT).show();
+        if (userBalance - amount < MAINTAINING_BALANCE) {
+            Toast.makeText(this, "Transaction failed. You need to maintain a balance of ₱" + MAINTAINING_BALANCE, Toast.LENGTH_LONG).show();
             return;
         }
 

@@ -21,6 +21,8 @@ import java.util.Locale;
 public class BankTransferDetailsActivity extends AppCompatActivity {
 
     private TextView tvAvailableBalance, tvBalanceAfter;
+
+    private static final double MAINTAINING_BALANCE = 500.0;
     private EditText etAmount;
     private Button btnSend;
     private ImageButton btnBack;
@@ -56,7 +58,8 @@ public class BankTransferDetailsActivity extends AppCompatActivity {
         btnSend.setOnClickListener(v -> processTransfer());
         etAmount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -64,7 +67,8 @@ public class BankTransferDetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -73,16 +77,7 @@ public class BankTransferDetailsActivity extends AppCompatActivity {
         updateBalanceAfterDisplay();
     }
 
-    private void updateBalanceAfterDisplay() {
-        double amount = 0;
-        try {
-            amount = Double.parseDouble(etAmount.getText().toString());
-        } catch (NumberFormatException e) {
-            // Invalid input, ignore
-        }
-        double balanceAfter = currentBalance - amount;
-        tvBalanceAfter.setText(String.format(Locale.getDefault(), "₱ %.2f", balanceAfter));
-    }
+
 
     private void processTransfer() {
         String amountStr = etAmount.getText().toString();
@@ -97,27 +92,47 @@ public class BankTransferDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        if (amount > currentBalance) {
-            Toast.makeText(this, "Insufficient balance", Toast.LENGTH_SHORT).show();
+        if (currentBalance - amount < MAINTAINING_BALANCE) {
+            Toast.makeText(this, "Transfer failed. You need to maintain a balance of ₱" + MAINTAINING_BALANCE, Toast.LENGTH_LONG).show();
             return;
         }
 
+        // Proceed with the transfer
+        performTransfer(amount);
+    }
+    private void performTransfer(double amount) {
         // Update user's balance
-        mDatabase.child("users").child(userId).child("balance").setValue(currentBalance - amount);
-
-        // Add transaction record
-        String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        String currentTime = sdf.format(new Date());
-
-        UserTransaction transaction = new UserTransaction("bank_transfer", -amount, System.currentTimeMillis(),
-                "Transfer to " + bankName, currentTime);
-
-        mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
+        mDatabase.child("users").child(userId).child("balance").setValue(currentBalance - amount)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(BankTransferDetailsActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
-                    finish();
+                    // Add transaction record
+                    String transactionId = mDatabase.child("users").child(userId).child("transactions").push().getKey();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    String currentTime = sdf.format(new Date());
+
+                    UserTransaction transaction = new UserTransaction("bank_transfer", -amount, System.currentTimeMillis(),
+                            "Transfer to " + bankName, currentTime);
+
+                    mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction)
+                            .addOnSuccessListener(aVoid2 -> {
+                                Toast.makeText(BankTransferDetailsActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(BankTransferDetailsActivity.this, "Failed to record transaction", Toast.LENGTH_SHORT).show());
                 })
                 .addOnFailureListener(e -> Toast.makeText(BankTransferDetailsActivity.this, "Transfer failed", Toast.LENGTH_SHORT).show());
+    }
+
+    private void updateBalanceAfterDisplay() {
+        double amount = 0;
+        try {
+            amount = Double.parseDouble(etAmount.getText().toString());
+        } catch (NumberFormatException e) {
+            // Invalid input, ignore
+        }
+        double balanceAfter = currentBalance - amount;
+        tvBalanceAfter.setText(String.format(Locale.getDefault(), "₱ %.2f", balanceAfter));
+
+        // Update button state based on maintaining balance
+        btnSend.setEnabled(balanceAfter >= MAINTAINING_BALANCE);
     }
 }

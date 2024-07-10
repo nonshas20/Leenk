@@ -1,14 +1,18 @@
 package com.example.leenk;
 
+import java.util.UUID;
+
 public class UserTransaction {
     private String type;
     private double amount;
     private long timestamp;
     private String description;
     private String paymentMethod;
+    private String referenceId;
 
     // Default constructor
     public UserTransaction() {
+        this.referenceId = generateReferenceId();
     }
 
     // Constructor with 4 parameters
@@ -17,7 +21,8 @@ public class UserTransaction {
         this.amount = amount;
         this.timestamp = timestamp;
         this.description = description;
-        this.paymentMethod = ""; // Default empty string for payment method
+        this.paymentMethod = "";
+        this.referenceId = generateReferenceId();
     }
 
     // Constructor with 5 parameters
@@ -27,6 +32,7 @@ public class UserTransaction {
         this.timestamp = timestamp;
         this.description = description;
         this.paymentMethod = paymentMethod;
+        this.referenceId = generateReferenceId();
     }
 
     // Getters and setters
@@ -68,5 +74,17 @@ public class UserTransaction {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    private String generateReferenceId() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

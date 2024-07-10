@@ -37,6 +37,9 @@ public class PayBillsActivity extends AppCompatActivity {
     private TextView tvFee;
     private Button btnPayBill;
     private String selectedBiller = "";
+
+    private static final double MAINTAINING_BALANCE = 500.0;
+    private static final double FIXED_FEE = 15.0; // New fixed fee
     private RecyclerView rvRecentTransactions;
 
     @Override
@@ -59,6 +62,9 @@ public class PayBillsActivity extends AppCompatActivity {
         setupBillAmountListener();
         setupPayBillButton();
         loadRecentTransactions();
+
+        // Set the fixed fee display
+        tvFee.setText(String.format("Fee: ₱ %.2f", FIXED_FEE));
     }
 
     private void loadUserBalance() {
@@ -112,14 +118,6 @@ public class PayBillsActivity extends AppCompatActivity {
     }
 
     private void updateFeeAndPayButton() {
-        String amountStr = etBillAmount.getText().toString();
-        if (!amountStr.isEmpty()) {
-            double amount = Double.parseDouble(amountStr);
-            double fee = Math.ceil(amount / 100) * 10;
-            tvFee.setText(String.format("Fee: ₱ %.2f", fee));
-        } else {
-            tvFee.setText("Fee: ₱ 0.00");
-        }
         updatePayButtonState();
     }
 
@@ -137,11 +135,10 @@ public class PayBillsActivity extends AppCompatActivity {
             }
 
             double amount = Double.parseDouble(amountStr);
-            double fee = Math.ceil(amount / 100) * 10;
-            double totalAmount = amount + fee;
+            double totalAmount = amount + FIXED_FEE;
 
-            if (totalAmount > currentBalance) {
-                Toast.makeText(PayBillsActivity.this, "Insufficient balance", Toast.LENGTH_SHORT).show();
+            if (totalAmount > currentBalance - MAINTAINING_BALANCE) {
+                Toast.makeText(PayBillsActivity.this, "Insufficient balance. You need to maintain a balance of ₱" + MAINTAINING_BALANCE, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -154,7 +151,7 @@ public class PayBillsActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Double currentBalance = mutableData.getValue(Double.class);
-                if (currentBalance == null || currentBalance < amount) {
+                if (currentBalance == null || (currentBalance - amount) < MAINTAINING_BALANCE) {
                     return Transaction.abort();
                 }
                 mutableData.setValue(currentBalance - amount);
@@ -168,11 +165,12 @@ public class PayBillsActivity extends AppCompatActivity {
                     Toast.makeText(PayBillsActivity.this, "Payment successful", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(PayBillsActivity.this, "Payment failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayBillsActivity.this, "Payment failed. Insufficient balance or unable to maintain minimum balance.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
     private void loadRecentTransactions() {
         mDatabase.child("users").child(userId).child("transactions")
                 .orderByChild("timestamp")
@@ -204,7 +202,7 @@ public class PayBillsActivity extends AppCompatActivity {
         long timestamp = System.currentTimeMillis();
 
         UserTransaction transaction = new UserTransaction("bill_payment", -amount, timestamp,
-                "Bill payment to " + selectedBiller);
+                "Bill payment to " + selectedBiller + " (including ₱" + FIXED_FEE + " fee)");
 
         mDatabase.child("users").child(userId).child("transactions").child(transactionId).setValue(transaction);
     }

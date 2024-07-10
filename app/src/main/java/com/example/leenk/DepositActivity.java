@@ -43,6 +43,9 @@ public class DepositActivity extends AppCompatActivity {
     private String userId;
     private String selectedPaymentMethod = "";
 
+    private static final double MIN_DEPOSIT = 100.0;
+    private static final double MAX_DEPOSIT = 10000.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,8 +92,10 @@ public class DepositActivity extends AppCompatActivity {
         String amountStr = etDepositAmount.getText().toString();
         Double amount = amountStr.isEmpty() ? null : Double.parseDouble(amountStr);
 
-        if (amount == null || amount <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+        if (amount == null || amount < MIN_DEPOSIT) {
+            Toast.makeText(this, "Minimum deposit amount is ₱" + MIN_DEPOSIT, Toast.LENGTH_SHORT).show();
+        } else if (amount > MAX_DEPOSIT) {
+            Toast.makeText(this, "Maximum deposit amount is ₱" + MAX_DEPOSIT, Toast.LENGTH_SHORT).show();
         } else if (selectedPaymentMethod.isEmpty()) {
             Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show();
         } else {
@@ -163,8 +168,12 @@ public class DepositActivity extends AppCompatActivity {
                 if (currentBalance == null) {
                     currentBalance = 0.0;
                 }
-                mutableData.setValue(currentBalance + amount);
-                return Transaction.success(mutableData);
+                if (amount >= MIN_DEPOSIT && amount <= MAX_DEPOSIT) {
+                    mutableData.setValue(currentBalance + amount);
+                    return Transaction.success(mutableData);
+                } else {
+                    return Transaction.abort();
+                }
             }
 
             @Override
@@ -174,7 +183,7 @@ public class DepositActivity extends AppCompatActivity {
                     Toast.makeText(DepositActivity.this, "Deposit successful", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(DepositActivity.this, "Deposit failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DepositActivity.this, "Deposit failed. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

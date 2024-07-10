@@ -50,6 +50,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
     private String expirationDate;
     private String cvv;
 
+    private static final double MAINTAINING_BALANCE = 500.0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -324,6 +326,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
                 });
     }
 
+
+
     private void performTransfer(double amount, String recipientUserId, String recipientAccountNumber, String currency) {
         mDatabase.runTransaction(new Transaction.Handler() {
             @Override
@@ -338,7 +342,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     return Transaction.abort();
                 }
 
-                if (senderBalance < amount) {
+                if (senderBalance - amount < MAINTAINING_BALANCE) {
                     return Transaction.abort();
                 }
 
@@ -351,10 +355,8 @@ public class HomeDashboardActivity extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                 if (committed) {
-                    // Add transaction for sender
                     addTransaction(-amount, "transfer_out", "Transfer to " + recipientAccountNumber + " (" + currency + ")");
 
-                    // Add transaction for recipient
                     String recipientTransactionId = mDatabase.child("users").child(recipientUserId).child("transactions").push().getKey();
                     UserTransaction recipientTransaction = new UserTransaction("transfer_in", amount, System.currentTimeMillis(), "Transfer from " + accountNumber + " (" + currency + ")");
                     mDatabase.child("users").child(recipientUserId).child("transactions").child(recipientTransactionId).setValue(recipientTransaction);
@@ -363,7 +365,7 @@ public class HomeDashboardActivity extends AppCompatActivity {
                     updateBalanceDisplay();
                     Toast.makeText(HomeDashboardActivity.this, "Transfer successful", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(HomeDashboardActivity.this, "Transfer failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeDashboardActivity.this, "Transfer failed. Insufficient balance or unable to maintain minimum balance.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
